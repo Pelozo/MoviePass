@@ -1,6 +1,6 @@
 <nav class="navBar">
      <div>
-          *logo*
+          <img src='<?=FRONT_ROOT?>views/logo/example.png' alt='logo' width=75px>
           <?php 
           if(isset($_SESSION['user'])){
                echo 'Bienvenido, ' . $_SESSION['user']->getEmail();
@@ -41,7 +41,6 @@
           </li>
           <li class="navItem">
                <a class="navLink" href="<?=FRONT_ROOT?>user/signup">Registrar</a>
-
           </li>
           <?php }?>
           

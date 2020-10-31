@@ -5,8 +5,8 @@
 		<div class="col-sm-2"></div>		
 		<div class="col-sm-6 bg-light boxStyle">
 			<form name="theform" action="" method="POST">
-                <?php if(isset($cinema)){?>
-                    <input type="hidden" name="id" value="<?=$cinema->getId()?>">
+                <?php if(isset($show)){?>
+                    <input type="hidden" name="id" value="<?=$show->getId()?>">
                 <?php }?>
 
                 <div class="form-group">
@@ -26,7 +26,13 @@
                     <select name="cinemaId" id="cinemas" onchange="getRooms()">
                     <?php foreach($cinemas as $cinema){?>
                     
-                    <option value="<?=$cinema->getId()?>"><?=$cinema->getName()?></option>
+                    <option value="<?=$cinema->getId()?>"
+                    <?php
+                    if(isset($cinemaShow)){
+                      if($cinema->getId() == $cinemaShow->getId()){
+                        ?> selected
+                      <?php } ?>
+                    <?php } ?>><?=$cinema->getName()?></option>
                     <?php } ?>
                     </select>
                 </div>
@@ -37,7 +43,7 @@
                 </div>
                 <div class="form-group">
                     <label>Fecha<span class="asteriskField">*</span></label>
-                    <input type="datetime-local" id="time" name="time">
+                    <input type="datetime-local" id="time" name="time" value="<?php if(isset($date)) echo $date?>">
                 </div>
             
                 <?php if(isset($error)){?>
@@ -112,17 +118,21 @@ function selectMovie(id, title, image){
   movie = id;
   //close modal
   $('#myModal').modal('toggle');
+
   //display movie title on input
   $("#movieTitle").val(title);
 
   //remove previous poster if exists
   $("#moviePoster").empty();
+  
   //display poster
   $("#moviePoster").append("<img src=\"" + image + "\" width=\"150px\" >");
   
   //set movie id
   $("#movieId").val(id);
 }
+
+
 
 
 function getRooms() {

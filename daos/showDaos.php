@@ -70,9 +70,9 @@ class ShowDaos extends BaseDaos{
         $query = "INSERT INTO " . self::TABLE_NAME . " (idMovie_show, datetime_show, idRoom_show)
                                                         values(:idMovie_show, :datetime_show, :idRoom_show);";
 
-        $params['idMovie_show'] = $show->getMovie()->getId();
-        $params['idRoom_show'] = $show->getRoom()->getId();
-        $params['datetime_show'] = $show->getDateTime();
+        $params['idMovie_show'] = $show->getIdMovie()->getId();
+        $params['idRoom_show'] = $show->getIdRoom()->getId();
+        $params['datetime_show'] = $show->getDatetime();
 
         $this->connection = Connection::getInstance();
         return $this->connection->executeNonQuery($query, $params);
@@ -97,7 +97,7 @@ class ShowDaos extends BaseDaos{
         
 
         $parameters['datetime_show'] = $show->getDatetime();
-        $parameters['id_movie'] = $show->getMovie()->getId();
+        $parameters['id_movie'] = $show->getIdMovie()->getId();
         $parameters['id_cinema'] = $idCinema;
         
         $connection = Connection::getInstance();
@@ -116,7 +116,7 @@ class ShowDaos extends BaseDaos{
         AND (s.idRoom_show = :idRoom_show)";
 
         $parameters['datetime_show'] = $_show->getDatetime();
-        $parameters['idRoom_show'] = $_show->getRoom()->getId();
+        $parameters['idRoom_show'] = $_show->getIdRoom()->getId();
         
         $connection = Connection::getInstance();
         $resultSet = $connection->executeWithAssoc($query,$parameters);
