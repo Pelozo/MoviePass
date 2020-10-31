@@ -97,7 +97,6 @@ class MovieController{
 
 
         $movies = $this->movieDaos->getAllMoviesInBillboard();
-        var_dump($movies);
         
         $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
 

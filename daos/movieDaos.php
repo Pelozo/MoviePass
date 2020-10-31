@@ -36,7 +36,7 @@ class MovieDaos extends BaseDaos{
         $params['duration_movie'] = $movie->getDuration();
 
         $this->connection = Connection::getInstance();
-        $this->connection->executeNonQuery($query, $params);
+        return $this->connection->executeNonQuery($query, $params);
 
     }
 
@@ -111,17 +111,31 @@ class MovieDaos extends BaseDaos{
 
     const DEFAULT_POSTER = FRONT_ROOT . "views/img/default_poster.png";
 
+    public function constructMovie($movie){
+        //add default poster if needed
+        if($movie->getImg() == null){
+            $movie->setImg(self::DEFAULT_POSTER);
+        }
+
+        //api returns movies with 0 duration which messes up all our verifications, this is a quick "fix"
+        if($movie->getDuration() == 0){
+            $movie->setDuration(60);
+        }
+
+        return $movie;
+    }
+
     public function constructMovies($movies){
 
         $results = array();
         foreach($movies as $movie){
 
-            //add default poster if needed
-            if($movie->getImg() == null){
-                $movie->setImg(self::DEFAULT_POSTER);
-            }
+            $movie = $this->constructMovie($movie);
+
+
             array_push($results, $movie);
         }
+
 
         return $results;
         
@@ -198,7 +212,15 @@ class MovieDaos extends BaseDaos{
         foreach($resultSet as $movieArray){
             //get genres
             $genreDaos = GenreDaos::getInstance();
-            $movie = new Movie($movieArray['id_movie'], $movieArray['title_movie'], $movieArray['overview_movie'], $movieArray['img_movie'], $movieArray['language_movie'], $genreDaos->getByMovie($movieArray['id_movie']), $movieArray['releaseDate_movie'], $movieArray['duration_movie']);
+            $movie = new Movie($movieArray['id_movie'], 
+                                $movieArray['title_movie'],
+                                $movieArray['overview_movie'],
+                                $movieArray['img_movie'],
+                                $movieArray['language_movie'],
+                                $genreDaos->getByMovie($movieArray['id_movie']),
+                                $movieArray['releaseDate_movie'],
+                                $movieArray['duration_movie']
+                            );
             
             array_push($movies, $movie);
         }

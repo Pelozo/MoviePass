@@ -13,12 +13,14 @@ class HomeController{
 
     public function index(){
 
-        header("Location: movie/displayBillboard");
+        //header("Location: movie/displayBillboard");
 
   
 
         //$movieController->displayBillboard();
-               
+        require_once(VIEWS_PATH . "header.php");
+        require_once(VIEWS_PATH . "movieShows.php");
+        require_once(VIEWS_PATH . "footer.php");
 
     }
 }

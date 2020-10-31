@@ -51,7 +51,7 @@ class ShowController{
         $years = array_column($this->movieDaos->getMoviesYear(),'year');
 
         $cinemas = $this->cinemaDaos->getAllWithRooms();
-        
+
         if ($_POST){
             
             //get params
@@ -127,29 +127,22 @@ class ShowController{
 
         //echo "Date end show to add " . date('Y-m-d H:i:s', $endShow) . "($endShow)<br>";
 
-        $valid = true;
-
         //echo "----loop---<br>";
         foreach($shows3Days as $show){
-            
-            //echo "<pre>";
-            //var_dump($show);
-            //echo "</pre>";
 
             $dbShowStart = strtotime($show->getDateTime());
 
-            $dbShowMovieDuration = ($show->getMovie()->getDuration() +15) * 60;
+            $dbShowMovieDuration = ($show->getMovie()->getDuration() + 15) * 60;
             $dbShowEnd = $dbShowStart + $dbShowMovieDuration;
 
             //echo "Date start show in db " . date('Y-m-d H:i:s', $dbShowStart) . " ($dbShowStart)<br>";    
             //echo "Date end show in db " . date('Y-m-d H:i:s', $dbShowEnd) . "($dbShowEnd)<br>";
 
-            if(($showTime <= $dbShowEnd) and ($dbShowStart <= $endShow)){
-                $valid = false;
-                return $valid;
+            if(($showTime <= $dbShowEnd) && ($dbShowStart <= $endShow)){
+                return false;
             }
         }
-        return $valid;
+        return true;
     }
 }
 
