@@ -10,8 +10,7 @@ class UserProfile{
     private $dni;
 
 
-    public function __construct($idUser = '', $firstName = '', $lastName = '', $dni = ''){
-        $this->idUser = $idUser;
+    public function __construct($firstName = '', $lastName = '', $dni = ''){
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->dni = $dni;
