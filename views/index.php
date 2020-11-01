@@ -7,18 +7,15 @@
         <select name="genre" id="genres" onchange="showResult()">
             <option value="all">Todos</option>
             <?php foreach($genres as $genre){?>
-            <option value="<?=$genre->getId();?>" <?php if($genre->getId() == $genreRequired) echo "selected=\"selected\""?>><?=$genre->getName();?></option> 
+            <option value="<?=$genre->getId();?>"><?=$genre->getName();?></option> 
         <?php } ?>
         </select>
     </form>
 
-    <input type="date" id="time" name="time">
+    <input type="date" id="time" name="time" onChange="updateMovies()">
 
     <div class="moviesList" id="moviesList">
-        <?php foreach($movies as $movie){?> 
-        <a class="movieButton" href="<?=FRONT_ROOT?>movie/details/<?= $movie->getId()?>"><img class="img-responsive" style="max-width: 10%" src="<?= $movie->getImg(); ?>" alt="<?= $movie->getTitle();?>" ></a>
-        
-        <?php } ?>
+
     </div>
     <br>
     <nav>
