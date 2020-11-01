@@ -27,62 +27,18 @@ class MovieController{
 
         $this->genreDaos->update();
         $this->movieDaos->update();
-        $this->show();
+        $this->displayBillboard();
     }
 
         
     public function index(){
-        //header("Location: show");
-        $this->show();
+        $this->displayBillboard();
     }
 
     public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
         if($name == "all") $name = null;
         $movies = $this->movieDaos->getMoviesFiltered($genreRequired, $yearRequired, $name, $page);
         echo json_encode($movies);
-    }
-
-
-    public function showTest($genreRequired = "all", $yearRequired = "all", $query = null, $page = 1){
-
-        $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
-
-        $years = array_column($this->movieDaos->getMoviesYear(),'year');
-
-
-        require_once(VIEWS_PATH . "header.php");
-        require_once(VIEWS_PATH . "moviesSlide.php");
-        require_once(VIEWS_PATH . "footer.php");
-    }
-
-
-    public function show($genreRequired = "all", $yearRequired = "all", $page = 1){
-
-        
-        $movies = $this->movieDaos->getAll();
-        $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
-
-        $page = intval($page);
-
-        
-        $years = array_column($this->movieDaos->getMoviesYear(),'year');
-
-
-
-        
-        //pagination
-        $limit = 16;//limit to show per page
-        $totalMovies = count($movies);
-        $totalPages = intval(ceil($totalMovies / $limit));
-        $offset = ($page - 1) * $limit;
-        if($offset < 0) $offset = 0;
-
-        $movies = array_slice($movies, $offset, $limit);
-        
-
-        require_once(VIEWS_PATH . "header.php");
-        require_once(VIEWS_PATH . "index.php");
-        require_once(VIEWS_PATH . "footer.php");
     }
 
 
@@ -93,34 +49,23 @@ class MovieController{
         echo "</pre>";
     }
 
-    public function displayBillboard($genreRequired = "all", $yearRequired = "all", $page = 1){
-
-
-        $movies = $this->movieDaos->getAllMoviesInBillboard();
+    public function displayBillboard(){
         
         $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
 
-        $page = intval($page);
-
-        
-        $years = array_column($this->movieDaos->getMoviesYear(),'year');
-
-
-
-        
-        //pagination
-        $limit = 16;//limit to show per page
-        $totalMovies = count($movies);
-        $totalPages = intval(ceil($totalMovies / $limit));
-        $offset = ($page - 1) * $limit;
-        if($offset < 0) $offset = 0;
-
-        $movies = array_slice($movies, $offset, $limit);
-        
-
         require_once(VIEWS_PATH . "header.php");
-        require_once(VIEWS_PATH . "index.php");
+        require_once(VIEWS_PATH . "movieShows.php");
         require_once(VIEWS_PATH . "footer.php");
+    }    
+    
+    public function getShows($genre = 'all', $date = 'all'){
+
+        if($genre == 'all')$genre = null;
+        if($date == 'all')$date = null;
+ 
+        $movies = $this->movieDaos->getAllMoviesInBillboardTest($genre, $date);
+
+        echo json_encode($movies);
     }
 
 }

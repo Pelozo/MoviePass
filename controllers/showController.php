@@ -125,7 +125,7 @@ class ShowController{
             $idRoom = $_POST['roomId'];
             $idCinema = $_POST['cinemaId'];
             
-            $show = new Show($idMovie, $idRoom, $date);
+            $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
             $show->setId($_POST['id']);
             $cinema = $this->cinemaDaos->getById($idCinema);
             $room = $this->roomDaos->getById($idRoom);
@@ -200,14 +200,8 @@ class ShowController{
         foreach($shows3Days as $show){
 
             $dbShowStart = strtotime($show->getDateTime());
-
-<<<<<<< HEAD
             $dbShowMovieDuration = ($show->getMovie()->getDuration() + 15) * 60;
-=======
-            $dbShowMovieDuration = ($show->getIdMovie()->getDuration() +15) * 60;
->>>>>>> master
             $dbShowEnd = $dbShowStart + $dbShowMovieDuration;
-
             //echo "Date start show in db " . date('Y-m-d H:i:s', $dbShowStart) . " ($dbShowStart)<br>";    
             //echo "Date end show in db " . date('Y-m-d H:i:s', $dbShowEnd) . "($dbShowEnd)<br>";
 
@@ -217,6 +211,8 @@ class ShowController{
         }
         return true;
     }
+
+
 }
 
 
