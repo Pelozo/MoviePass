@@ -19,7 +19,11 @@ class UserController{
         
         if($_POST){            
             $email = $_POST['email'];            
-            $password = $_POST['password'];            
+            $password = $_POST['password'];
+            $firstName = $_POST['firstName'];            
+            $lastName = $_POST['lastName'];  
+            $dni = $_POST['dni'];            
+            
             if($this->daos->exists($email)){
                 echo 'Ya hay un usuario registrado con ese email';
                 require_once(VIEWS_PATH . "header.php");
@@ -27,7 +31,14 @@ class UserController{
                 require_once(VIEWS_PATH . "footer.php");
             }else{
                 $user = new User($email,$password,2);
-                $this->daos->add($user);  
+                $this->daos->add($user); 
+                $_user = $this->daos->getByEmail($email);
+                $profile = new Profile($firstName, $lastName, $dni);
+                $profile->setIdUser($_user->getId());
+                echo '<pre>';
+                var_dump($profile);
+                echo '</pre>';
+                $this->userProfileDaos->add($profile);
                 require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "login.php");
                 require_once(VIEWS_PATH . "footer.php");          
@@ -47,6 +58,8 @@ class UserController{
             if($user != null){
                 if ($user->getPassword() == $password){
                     $_SESSION['user'] = $user;
+                    $profile = $this->userProfileDaos->getById($user->getId());
+                    $_SESSION['profile'] = $profile;
                     require_once(VIEWS_PATH . "header.php");
                     require_once(VIEWS_PATH . "login.php"); //acá tendría que ir otra vista, o llamar o movieController->show() o algo así, no sé.
                     require_once(VIEWS_PATH . "footer.php");
@@ -74,32 +87,35 @@ class UserController{
         $this->login();
     }
 
-    public function profile(){
-        if($_POST){
-            if(!isset($_SESSION['profile'])){
-                $profile = new Profile();
-                if($_POST['firstName'] != null){
-                    $profile->setFirstName($_POST['firstName']);
-                }
-                if($_POST['lastName'] != null){
-                    $profile->setLastName($_POST['lastname']);
-                }
-                if($_POST['dni'] != null){
-                    $profile->setDni($_POST['dni']);
-                }
-                $profile->setIdUser($_SESSION['user']->getId());
-                $_SESSION['profile'] = $profile;
-                $this->userProfileDaos->add($profile); 
-            }else{
-                $profile = $_SESSION['profile'];
-                echo $profile->getLastName();
-                $this->userProfileDaos->modify($profile);
-            }
-            
-        }
+    public function index(){
+        $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
         require_once(VIEWS_PATH . "header.php");
-        require_once(VIEWS_PATH . "profile.php");
-        require_once(VIEWS_PATH . "footer.php");
+        require_once(VIEWS_PATH . "modifyProfile.php");
+        require_once(VIEWS_PATH . "footer.php");  
+    }
+
+
+    public function profile(){
+        if(isset($_POST['firstName'], $_POST['lastName'],$_POST['dni'])){
+
+            $firstName = $_POST['firstName'];
+            $lastName = $_POST['lastName'];
+            $dni = $_POST['dni'];
+
+            $profile = new Profile($firstName, $lastName, $dni);
+            $profile->setIdUser($_SESSION['user']->getId());
+
+            $this->userProfileDaos->modify($profile);
+
+            $message = 'Cambios realizados con exito!'; 
+            
+            require_once(VIEWS_PATH . "header.php");
+            require_once(VIEWS_PATH . "modifyProfile.php");
+            require_once(VIEWS_PATH . "footer.php");  
+
+        }else{
+            $this->index();       
+        }
     }
 }
 

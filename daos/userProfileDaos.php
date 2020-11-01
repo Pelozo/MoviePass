@@ -12,7 +12,7 @@ class UserProfileDaos extends BaseDaos{
     }
 
     public function getById($id){
-        return parent::_getByProperty($id, 'id');
+        return parent::_getByProperty($id, 'idUser');
     }
 
     public function add($user){
