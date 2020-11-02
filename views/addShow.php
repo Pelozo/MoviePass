@@ -15,11 +15,11 @@
                       <div class="input-group-prepend">
                         <button class="btn btn-outline-secondary" type="button">Seleccionar</button>
                       </div>
-                      <input id="movieTitle" type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled>
-                      <input id='movieId' type='hidden' name='movieId'>
+                      <input id="movieTitle" type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled value="<?php if(isset($movie)) echo $movie->getTitle()?>">
+                      <input id='movieId' type='hidden' name='movieId' value="<?php if(isset($movie)) echo $movie->getId()?>">
                     </div>
                     <br>
-                    <div id="moviePoster"></div>
+                    <div id="moviePoster"><img src="<?php if(isset($movie)) echo $movie->getImg()?>" width="150px"></div>
 
                 <div class="form-group">
                     <label>Cine<span class="asteriskField">*</span></label>
@@ -149,17 +149,29 @@ function getRooms() {
 
             //get all rooms from json
             var rooms = JSON.parse(this.responseText);
+            <?php if(isset($room)){
+             echo "var idRoom = " . $room->getId() . ";";
+            } else {
+              echo "var idRoom = -1";
+            }?>
 
             //loop each room and add it to dropdown
             rooms.forEach(function(room){
+              if(idRoom == room['id']){
+                $('#rooms').append($('<option>',{
+                    value: room['id'],
+                    text : room['name'].charAt(0).toUpperCase() + room['name'].slice(1) + " (Capacidad: " + room['capacity'] + " | Precio: " + room['price'] + ")",
+                    selected : true
+                }));
+              } else {
                 $('#rooms').append($('<option>',{
                     value: room['id'],
                     text : room['name'].charAt(0).toUpperCase() + room['name'].slice(1) + " (Capacidad: " + room['capacity'] + " | Precio: " + room['price'] + ")"
                 }));
+              }
             });                
         }
     } 
- 
   xmlhttp.open("GET","<?= FRONT_ROOT?>room/getByCinema/" + cinema, true);
   xmlhttp.send();
 }

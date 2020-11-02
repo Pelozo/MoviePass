@@ -9,9 +9,11 @@ class ShowDaos extends BaseDaos{
 
     const TABLE_NAME = "shows";
     const SHOW_INTERVAL = 15;
+    private $genreDaos;
 
     public function __construct(){
         parent::__construct(self::TABLE_NAME, 'Show');        
+        $this->genreDaos = GenreDaos::getInstance();
     }
 
     public function getAll(){
@@ -26,6 +28,7 @@ class ShowDaos extends BaseDaos{
         $connection = Connection::getInstance();
         $resultSet = $connection->executeWithAssoc($query);
 
+
         $results = array();
 
         foreach ($resultSet as $show){
@@ -36,17 +39,18 @@ class ShowDaos extends BaseDaos{
                                     $show['overview_movie'], 
                                     $show['img_movie'], 
                                     $show['language_movie'],                                    
-                                    null,                                    
+                                    $this->genreDaos->getByMovie($show['id_movie']),                                    
                                     $show['releaseDate_movie'],
                                     $show['duration_movie']),
                                 new Room(
-                                    $show['id_room'],
+                                    $show['name_room'],
                                     $show['price_room'],
                                     $show['capacity_room'],
                                     $show['idCinema_room']
                                 ),
                                 $show['datetime_show']
                             );
+            $object->getRoom()->setId($show['id_room']);
             $object->setId($show['id_show']);
             $results['shows'][] = $object;
 
@@ -62,7 +66,38 @@ class ShowDaos extends BaseDaos{
     }
 
     public function getById($id){
-        return parent::_getByProperty($id, 'id');
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+        INNER JOIN movies m ON s.idMovie_show = m.id_movie
+        INNER JOIN rooms r ON s.idRoom_show = r.id_room
+        INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        WHERE s.id_show = :id_show";
+
+        $connection = Connection::getInstance();
+        $parameters['id_show'] = $id; 
+        $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
+
+        $object = new show(
+                            new Movie(
+                                $resultSet['id_movie'],
+                                $resultSet['title_movie'], 
+                                $resultSet['overview_movie'], 
+                                $resultSet['img_movie'], 
+                                $resultSet['language_movie'],                                    
+                                $this->genreDaos->getByMovie($resultSet['id_movie']),                                    
+                                $resultSet['releaseDate_movie'],
+                                $resultSet['duration_movie']),
+                            new Room(
+                                $resultSet['name_room'],
+                                $resultSet['price_room'],
+                                $resultSet['capacity_room'],
+                                $resultSet['idCinema_room']
+                            ),
+                            $resultSet['datetime_show']
+                        );
+        $object->getRoom()->setId($resultSet['id_room']);
+        $object->setId($resultSet['id_show']);
+
+        return $object;
     }
 
     public function add($show){
@@ -70,8 +105,8 @@ class ShowDaos extends BaseDaos{
         $query = "INSERT INTO " . self::TABLE_NAME . " (idMovie_show, datetime_show, idRoom_show)
                                                         values(:idMovie_show, :datetime_show, :idRoom_show);";
 
-        $params['idMovie_show'] = $show->getIdMovie()->getId();
-        $params['idRoom_show'] = $show->getIdRoom()->getId();
+        $params['idMovie_show'] = $show->getMovie()->getId();
+        $params['idRoom_show'] = $show->getRoom()->getId();
         $params['datetime_show'] = $show->getDatetime();
 
         $this->connection = Connection::getInstance();
@@ -84,7 +119,23 @@ class ShowDaos extends BaseDaos{
     }
 
     public function modify($show){
-        return parent::_modify($show, $show->getId(), "id");
+        try{
+            $query = "UPDATE " . self::TABLE_NAME . " SET idMovie_show = :idMovie_show,
+            datetime_show = :datetime_show,
+            idRoom_show = :idRoom_show
+            WHERE id_show = :id_show";
+    
+            $parameters['idMovie_show'] = $show->getMovie()->getId();
+            $parameters['datetime_show'] = $show->getDatetime();
+            $parameters['idRoom_show'] = $show->getRoom()->getId();
+            $parameters['id_show'] = $show->getId();
+
+            $this->connection = Connection::getInstance();
+            $this->connection->ExecuteNonQuery($query, $parameters);
+
+        } catch(Exception $e) {
+            throw $e;
+        }
     }
 
     public function verifyShowDay($show, $idCinema){
@@ -97,7 +148,7 @@ class ShowDaos extends BaseDaos{
         
 
         $parameters['datetime_show'] = $show->getDatetime();
-        $parameters['id_movie'] = $show->getIdMovie()->getId();
+        $parameters['id_movie'] = $show->getMovie()->getId();
         $parameters['id_cinema'] = $idCinema;
         
         $connection = Connection::getInstance();
@@ -116,7 +167,7 @@ class ShowDaos extends BaseDaos{
         AND (s.idRoom_show = :idRoom_show)";
 
         $parameters['datetime_show'] = $_show->getDatetime();
-        $parameters['idRoom_show'] = $_show->getIdRoom()->getId();
+        $parameters['idRoom_show'] = $_show->getRoom()->getId();
         
         $connection = Connection::getInstance();
         $resultSet = $connection->executeWithAssoc($query,$parameters);

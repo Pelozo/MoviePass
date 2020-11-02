@@ -214,8 +214,6 @@ abstract class BaseDaos{
         $query = substr($query, 0, -1);
 
         //add where to query
-        echo $_property . '<br>';
-
         $query .= " WHERE {$_property}_$this->className = $_value";
 
 

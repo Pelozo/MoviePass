@@ -35,9 +35,6 @@ class UserController{
                 $_user = $this->daos->getByEmail($email);
                 $profile = new Profile($firstName, $lastName, $dni);
                 $profile->setIdUser($_user->getId());
-                echo '<pre>';
-                var_dump($profile);
-                echo '</pre>';
                 $this->userProfileDaos->add($profile);
                 require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "login.php");
@@ -61,7 +58,7 @@ class UserController{
                     $profile = $this->userProfileDaos->getById($user->getId());
                     $_SESSION['profile'] = $profile;
                     require_once(VIEWS_PATH . "header.php");
-                    require_once(VIEWS_PATH . "login.php"); //acá tendría que ir otra vista, o llamar o movieController->show() o algo así, no sé.
+                    header('location:' . FRONT_ROOT); //acá tendría que ir otra vista, o llamar o movieController->show() o algo así, no sé.
                     require_once(VIEWS_PATH . "footer.php");
                     return;
 
