@@ -4,14 +4,14 @@ namespace models;
 
 class Show{
     private $id;
-    private $idMovie;
-    private $idRoom;
+    private $movie;
+    private $room;
     private $datetime;
 
-    public function __construct($idMovie = '', $idRoom = '', $datetime = ''){
+    public function __construct($movie = '', $room = '', $datetime = ''){
 
-        $this->idMovie = $idMovie;
-        $this->idRoom = $idRoom;
+        $this->movie = $movie;
+        $this->room = $room;
         $this->datetime = $datetime;
     }
 
@@ -23,20 +23,20 @@ class Show{
         $this->id = $id;
     }
 
-    public function getIdMovie(){
-        return $this->idMovie;
+    public function getMovie(){
+        return $this->movie;
     }
 
-    public function setIdMovie($idMovie){
-        $this->idMovie = $idMovie;
+    public function setMovie($movie){
+        $this->movie = $movie;
     }
 
-    public function getIdRoom(){
-        return $this->idRoom;
+    public function getRoom(){
+        return $this->room;
     }
 
-    public function setIdRoom($idRoom){
-        $this->idRoom = $idRoom;
+    public function setRoom($room){
+        $this->room = $room;
     }
 
     public function getDatetime(){

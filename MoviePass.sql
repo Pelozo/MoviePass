@@ -73,6 +73,7 @@ INSERT INTO rols (id_rol, description_rol) VALUES (1, 'admin');
 INSERT INTO rols (id_rol, description_rol) VALUES (2, 'user');
 
 INSERT INTO users (email_user, password_user, idRol_user) values ('admin@moviepass.com', '1234', 1);
+INSERT INTO userprofiles (idUser_userprofile) values (1);
 
 INSERT INTO cinemas (name_cinema, address_cinema, city_cinema, province_cinema, zip_cinema) VALUES ('Cine Ambassador','Diagonal Centro 1673','Mar del Plata','Buenos Aires','7600');
 INSERT INTO cinemas (name_cinema, address_cinema, city_cinema, province_cinema, zip_cinema) VALUES ('Cines Paseo Aldrey','Sarmiento 2685','Mar del Plata','Buenos Aires','7600');

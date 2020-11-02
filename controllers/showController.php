@@ -124,34 +124,48 @@ class ShowController{
             $date = $_POST['time'];
             $idRoom = $_POST['roomId'];
             $idCinema = $_POST['cinemaId'];
-            
-            $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
-            $show->setId($_POST['id']);
-            $cinema = $this->cinemaDaos->getById($idCinema);
-            $room = $this->roomDaos->getById($idRoom);
 
-            //check for empty fields
-            if ($idMovie == null){
-                $error = 'Por favor, seleccione una película';
+            $room = $this->roomDaos->getById($idRoom);
+            $movie = $this->movieDaos->getById($idMovie);
+
+            $show = new Show($movie, $room, $date);
+            $show->setId($_POST['id']);
+            $cinemaShow = $this->cinemaDaos->getById($idCinema);
+
+            $error = null;
+
+            $result = $this->showDaos->verifyShowDay($show, $idCinema);
+            if(!empty($result)){
+                foreach($result as $res){
+                    if($res['id_cinema'] != $idCinema){
+                        $error = 'No se puede agregar la misma película un mismo día a distintos cines';
+                    }
+                }
+            }
+                
+            $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
+            
+            $valid = $this->verify15Minutes($shows3Days, $show);
+            
+            if(!$valid){
+                $error = 'Ya hay una funcion a esa hora.';
+            }
+            if($error == null){
+                $this->showDaos->modify($show);
+                $this->index();
+            } else {
                 require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "addShow.php");
                 require_once(VIEWS_PATH . "footer.php");
-                
-            } else {
-                //modify show in db
-                $this->showDaos->modify($show);
-                //back to index
-                $this->index();
-
             }
         } else {
             
             //get show, cinema and room from id
             $show = $this->showDaos->getById($id);
-            $room = $this->roomDaos->getById($show->getIdRoom());
+            $room = $show->getRoom();
             $cinemaShow = $this->cinemaDaos->getById($room->getIdCinema());
+            $movie = $show->getMovie();
         
-
             $date = $show->getDatetime();
 
             //php to html date format
@@ -185,7 +199,7 @@ class ShowController{
     private function verify15Minutes($shows3Days, $_show){
 
         //echo "Duration movie to add: {$_show->getMovie()->getDuration()} <br>";
-        $durationSeconds = ($_show->getIdMovie()->getDuration() + 15) * 60;
+        $durationSeconds = ($_show->getMovie()->getDuration() + 15) * 60;
         //echo "Duration + 15 to seconds $durationSeconds <br>";
 
         $showTime = strtotime($_show->getDatetime());
@@ -205,7 +219,7 @@ class ShowController{
             //echo "Date start show in db " . date('Y-m-d H:i:s', $dbShowStart) . " ($dbShowStart)<br>";    
             //echo "Date end show in db " . date('Y-m-d H:i:s', $dbShowEnd) . "($dbShowEnd)<br>";
 
-            if(($showTime <= $dbShowEnd) && ($dbShowStart <= $endShow)){
+            if(($showTime <= $dbShowEnd) && ($dbShowStart <= $endShow) && $_show->getId() != $show->getId()){
                 return false;
             }
         }
