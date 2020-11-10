@@ -18,23 +18,23 @@ class CinemaController{
             return;
         }
 
-        $cinemas = $this->cinemaDaos->getAll();
+        try{
+            $cinemas = $this->cinemaDaos->getAll();
+        } catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
         require_once(VIEWS_PATH . "cinemaTable.php");
-    }
-
-    public function getAll(){
-        $cinemas = $this->cinemaDaos->getAll(); 
     }
 
 
     public function add($name = null, $address= null, $city = null, $province= null, $postal=null){
-
-        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
-            header("HTTP/1.1 403");           
+         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");
             return;
         }
         
         if(isset($name, $address, $city, $province, $postal)){
+
 
             $cinema = new Cinema($name, $address, $city, $postal, $province);
 
@@ -42,20 +42,28 @@ class CinemaController{
             $required = array('name' => 'nombre',  'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
-                  $error = ucfirst($required[$field]) . " no puede estar vacio";
+
+                  $err = ucfirst($required[$field]) . " no puede estar vacio";
+
                   require_once(VIEWS_PATH . "addCinema.php");
                   return;
                 }
             }
 
-            //add cinema to db
-            $this->cinemaDaos->add($cinema);
-            //back to index
-            $this->index();
-        }else{
-            require_once(VIEWS_PATH . "addCinema.php");        
-        }
-        
+            try{
+                //add cinema to db
+                $this->cinemaDaos->add($cinema);
+                //back to index
+                $this->index();
+            }
+            catch(\Exception $err){
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "addCinema.php");
+            }
+            } else {
+                require_once(VIEWS_PATH . "addCinema.php");
+            }
+
     }
 
 
@@ -78,26 +86,36 @@ class CinemaController{
             $required = array('name' => 'nombre', 'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
-                  $error = ucfirst($required[$field]) . " no puede estar vacio";
+                  
+                  $err = ucfirst($required[$field]) . " no puede estar vacio";
+
                   require_once(VIEWS_PATH . "addCinema.php");
                   return;
                 }
             }
-
-            //modify cinema in db
-            $this->cinemaDaos->modify($cinema);
-            //back to index
-            $this->index();
+            try{
+                //modify cinema in db
+                $this->cinemaDaos->modify($cinema);
+                //back to index
+                $this->index();
+            } catch(\Exception $err){
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "addCinema.php");
+            }
         }else{
-            
-        //get cinema from id
-        $cinema = $this->cinemaDaos->getById($id);
 
-        //cinema not found
-        if(empty($cinema)){
-            $this->index();
-            return;
-        }
+            try{
+                //get cinema from id
+                $cinema = $this->cinemaDaos->getById($id);
+                //cinema not found
+                if(empty($cinema)){
+                    $this->index();
+                    return;
+                }
+            } catch(\Exception $err){
+                $err = DATABASE_ERR;
+            }
+
         require_once(VIEWS_PATH . "addCinema.php");
         }
     }
@@ -108,8 +126,11 @@ class CinemaController{
             header("HTTP/1.1 403");           
             return;
         }
-        
-        $this->cinemaDaos->remove($id);
+        try{
+            $this->cinemaDaos->remove($id);
+        } catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
         $this->index();
     }
 

@@ -31,9 +31,11 @@ class ShowController{
             header("HTTP/1.1 403");           
             return;
         }
-
-        $shows = $this->showDaos->getAll();
-
+        try{
+            $shows = $this->showDaos->getAll();
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
         require_once(VIEWS_PATH . "showTable.php");
     }
 
@@ -45,45 +47,54 @@ class ShowController{
             return;
         }
 
-        //this is used later in the view to display dropdowns
-        $genres = $this->genreDaos->getAll(); 
-        $years = array_column($this->movieDaos->getMoviesYear(),'year');
+        try{
+            //this is used later in the view to display dropdowns
+            $genres = $this->genreDaos->getAll(); 
+            $years = array_column($this->movieDaos->getMoviesYear(),'year');
+            $cinemas = $this->cinemaDaos->getAllWithRooms();
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+            require_once(VIEWS_PATH . "addShow.php");
+        }
 
-        $cinemas = $this->cinemaDaos->getAllWithRooms();
 
-
-        //check if form was sent
         if (isset($idMovie, $date, $idRoom, $idCinema)){
-            $error = null;
+      
+            $err = null;
 
             if ($idMovie == null){
-                $error = 'Por favor, seleccione una película';
+                $err = 'Por favor, seleccione una película';
+
                 require_once(VIEWS_PATH . "addShow.php");
                 
             } else {
-                //create new show
-                $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
-                //echo $show->getDatetime();
-                $result = $this->showDaos->verifyShowDay($show, $idCinema);
-                if(!empty($result)){
-                    foreach($result as $res){
-                        if($res['id_cinema'] != $idCinema){
-                            $error = 'No se puede agregar la misma película un mismo día a distintos cines';
+                try{
+                    //create new show
+                    $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
+                    $result = $this->showDaos->verifyShowDay($show, $idCinema);
+                    if(!empty($result)){
+                        foreach($result as $res){
+                            if($res['id_cinema'] != $idCinema){
+                                $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                            }
                         }
                     }
-                }
-                
-                $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
-                
-                $valid = $this->verify15Minutes($shows3Days, $show);
-                
-                if(!$valid){
-                    $error = 'Ya hay una funcion a esa hora.';
-                }
-                if($error == null){
-                    $this->showDaos->add($show);
-                    $this->index();
-                } else {
+
+                    $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
+                    $valid = $this->verify15Minutes($shows3Days, $show);
+                    
+                    if(!$valid){
+                        $err = 'Ya hay una funcion a esa hora.';
+                    }
+                    if($err == null){
+                        $this->showDaos->add($show);
+                        $this->index();
+                    } else {
+                        require_once(VIEWS_PATH . "addShow.php");
+                    }
+                }catch(\Exception $err){
+                    $err = DATABASE_ERR;
+
                     require_once(VIEWS_PATH . "addShow.php");
                 }
             }
@@ -99,12 +110,18 @@ class ShowController{
             header("HTTP/1.1 403");           
             return;
         }
-
-        $genres = $this->genreDaos->getAll(); 
-        $years = array_column($this->movieDaos->getMoviesYear(),'year');
-        $cinemas = $this->cinemaDaos->getAllWithRooms();
+        try{
+            $genres = $this->genreDaos->getAll(); 
+            $years = array_column($this->movieDaos->getMoviesYear(),'year');
+            $cinemas = $this->cinemaDaos->getAllWithRooms(); 
+        } catch(\Exception $err){
+            $err = DATABASE_ERR;
+            require_once(VIEWS_PATH . "addShow.php");
+        }
+        
         
         //check if form was sent
+
         if(isset($idMovie, $idCinema, $idRoom, $date)){
 
             $room = $this->roomDaos->getById($idRoom);
@@ -114,47 +131,55 @@ class ShowController{
             $show->setId($id);
             $cinemaShow = $this->cinemaDaos->getById($idCinema);
 
-            $error = null;
+            $err = null;
 
             $result = $this->showDaos->verifyShowDay($show, $idCinema);
             if(!empty($result)){
                 foreach($result as $res){
                     if($res['id_cinema'] != $idCinema){
-                        $error = 'No se puede agregar la misma película un mismo día a distintos cines';
+                        $err = 'No se puede agregar la misma película un mismo día a distintos cines';
                     }
                 }
-            }
+                    
+                $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 
-            $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
-            
-            $valid = $this->verify15Minutes($shows3Days, $show);
-            
-            if(!$valid){
-                $error = 'Ya hay una funcion a esa hora.';
-            }
-            if($error == null){
-                $this->showDaos->modify($show);
-                $this->index();
-            } else {
+                $valid = $this->verify15Minutes($shows3Days, $show);
+                
+                if(!$valid){
+                    $err = 'Ya hay una funcion a esa hora.';
+                }
+                if($err == null){
+                    $this->showDaos->modify($show);
+                    $this->index();
+                } else {
+                    require_once(VIEWS_PATH . "addShow.php");
+                }
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
+
                 require_once(VIEWS_PATH . "addShow.php");
             }
         } else {
-            
-            //get show, cinema and room from id
-            $show = $this->showDaos->getById($id);
-            $room = $show->getRoom();
-            $cinemaShow = $this->cinemaDaos->getById($room->getIdCinema());
-            $movie = $show->getMovie();
-        
-            $date = $show->getDatetime();
+            try{
 
-            //php to html date format
-            $date = str_replace(' ', 'T', $date);
-            
-            //show not found
-            if(empty($show)){
-                $this->index();
-                return;
+                //get show, cinema and room from id
+                $show = $this->showDaos->getById($id);
+                $room = $show->getRoom();
+                $cinemaShow = $this->cinemaDaos->getById($room->getIdCinema());
+                $movie = $show->getMovie();
+                
+                $date = $show->getDatetime();
+                
+                //php to html date format
+                $date = str_replace(' ', 'T', $date);
+                
+                //show not found
+                if(empty($show)){
+                    $this->index();
+                    return;
+                }
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
             }
             require_once(VIEWS_PATH . "addShow.php");
         }
@@ -167,34 +192,27 @@ class ShowController{
             header("HTTP/1.1 403");           
             return;
         }
-        
-        $this->showDaos->remove($id);
+        try{
+            $this->showDaos->remove($id);
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
         $this->index();
     }
 
-    //fuck my life https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap 
+    //https://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap 
     private function verify15Minutes($shows3Days, $_show){
-
-        //echo "Duration movie to add: {$_show->getMovie()->getDuration()} <br>";
         $durationSeconds = ($_show->getMovie()->getDuration() + 15) * 60;
-        //echo "Duration + 15 to seconds $durationSeconds <br>";
 
         $showTime = strtotime($_show->getDatetime());
 
-        //echo "Date start show to add " . date('Y-m-d H:i:s', $showTime) . " ($showTime)<br>";
-
         $endShow = strtotime($_show->getDatetime()) + $durationSeconds;
 
-        //echo "Date end show to add " . date('Y-m-d H:i:s', $endShow) . "($endShow)<br>";
-
-        //echo "----loop---<br>";
         foreach($shows3Days as $show){
 
             $dbShowStart = strtotime($show->getDateTime());
             $dbShowMovieDuration = ($show->getMovie()->getDuration() + 15) * 60;
             $dbShowEnd = $dbShowStart + $dbShowMovieDuration;
-            //echo "Date start show in db " . date('Y-m-d H:i:s', $dbShowStart) . " ($dbShowStart)<br>";    
-            //echo "Date end show in db " . date('Y-m-d H:i:s', $dbShowEnd) . "($dbShowEnd)<br>";
 
             if(($showTime <= $dbShowEnd) && ($dbShowStart <= $endShow) && $_show->getId() != $show->getId()){
                 return false;

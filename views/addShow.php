@@ -47,8 +47,8 @@
                     <input type="datetime-local" id="time" name="time" value="<?php if(isset($date)) echo $date?>">
                 </div>
             
-                <?php if(isset($error)){?>
-                    <?=$error?>
+                <?php if(isset($err)){?>
+                    <?=$err?>
                 <?php }?>
 
                 <div class="form-group">

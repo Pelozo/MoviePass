@@ -13,6 +13,19 @@ class MovieController{
         $this->movieDaos = new MovieDaos();
         $this->genreDaos = GenreDaos::getInstance();
     }
+    
+    public function index(){
+        $this->displayBillboard();
+    }
+
+    public function displayBillboard(){
+        try{
+            $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
+        require_once(VIEWS_PATH . "movieShows.php");
+    }
 
     public function update(){
 
@@ -21,20 +34,34 @@ class MovieController{
             return;
         }
 
+        try{
+            $this->genreDaos->update();
+            $this->movieDaos->update();
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
+        $this->index();
+    }
+    
 
-        $this->genreDaos->update();
-        $this->movieDaos->update();
-        $this->displayBillboard();
+    public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
+        if($name == "all") $name = null;
+        try{
+            $movies = $this->movieDaos->getMoviesFiltered($genreRequired, $yearRequired, $name, $page);
+            echo json_encode($movies);
+        } catch(\Exception $err){
+            echo '[]';
+        }
     }
 
-        
-    public function index(){
-        $this->displayBillboard();
-    }
 
-    //TODO 
+
     public function details($id){
-        $movie = $this->movieDaos->getById($id);
+        try{
+            $movie = $this->movieDaos->getById($id);
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
         echo "<pre>";
         var_dump($movie);
         echo "</pre>";
@@ -51,14 +78,21 @@ class MovieController{
         $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
         require_once(VIEWS_PATH . "movieShows.php");
     }    
+
     
     //this function returns json becuase it'll be called using ajax in the body of views/movieShows.php
     public function getShows($genre = 'all', $date = 'all'){
         if($genre == 'all')$genre = null;
-        if($date == 'all')$date = null; 
-        $movies = $this->movieDaos->getAllMoviesInBillboardTest($genre, $date);
+        if($date == 'all')$date = null;
+        
+        try{
+            $movies = $this->movieDaos->getAllMoviesInBillboardTest($genre, $date);
+            echo json_encode($movies);
+        }catch(\Exception $err){
+            echo '[]';
+        }
+        
 
-        echo json_encode($movies);
     }
 
 }

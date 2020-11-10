@@ -109,8 +109,6 @@ class MovieDaos extends BaseDaos{
         return $connection->executeWithAssoc($query);
     }
 
-
-
     public function constructMovie($movie){
 
         //api returns movies with 0 duration which messes up all our verifications, this is a quick "fix"

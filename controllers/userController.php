@@ -9,28 +9,35 @@ use daos\userProfileDaos as UserProfileDaos;
 class UserController{
     private $daos;
     private $userProfileDaos;
+    private $movieController;
 
     public function __construct(){
         $this->daos = new UserDaos();
         $this->userProfileDaos = new UserProfileDaos();
+        $this->movieController = new MovieController();
     }
 
     public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
         
         if(isset($email, $password, $firstName, $lastName, $dni)){        
             
-            if($this->daos->exists($email)){
-                echo 'Ya hay un usuario registrado con ese email';
+            try{
+                if($this->daos->exists($email)){
+                    $err = 'Ya hay un usuario registrado con ese email';
+                    require_once(VIEWS_PATH . "signup.php");
+                }else{
+                    $user = new User($email,$password,2);
+                    $this->daos->add($user); 
+                    $_user = $this->daos->getByEmail($email);
+                    $profile = new Profile($firstName, $lastName, $dni);
+                    $profile->setIdUser($_user->getId());
+                    $this->userProfileDaos->add($profile);
+                    require_once(VIEWS_PATH . "login.php");
+                } 
+            } catch(\Exception $err){
+                $err = DATABASE_ERR;
                 require_once(VIEWS_PATH . "signup.php");
-            }else{
-                $user = new User($email,$password,2);
-                $this->daos->add($user); 
-                $_user = $this->daos->getByEmail($email);
-                $profile = new Profile($firstName, $lastName, $dni);
-                $profile->setIdUser($_user->getId());
-                $this->userProfileDaos->add($profile);
-                require_once(VIEWS_PATH . "login.php");        
-            } 
+            }
         } else {
             require_once(VIEWS_PATH . "signup.php");
         }
@@ -39,20 +46,25 @@ class UserController{
     public function login($email = null, $password = null){
 
         if(isset($email, $password)){
-            $user = $this->daos->getByEmail($email);
-            if($user != null){
-                if ($user->getPassword() == $password){
-                    $_SESSION['user'] = $user;
-                    $profile = $this->userProfileDaos->getById($user->getId());
-                    $_SESSION['profile'] = $profile;
-                    header('location:' . FRONT_ROOT); //acá tendría que ir otra vista, o llamar o movieController->show() o algo así, no sé.
-                    return;
-
-                }else {
-                    echo 'contraseña incorrecta';
+            try{
+                $user = $this->daos->getByEmail($email);
+                $err = null;
+                if($user != null){
+                    if ($user->getPassword() == $password){
+                        $_SESSION['user'] = $user;
+                        $profile = $this->userProfileDaos->getById($user->getId());
+                        $_SESSION['profile'] = $profile;
+                        $this->movieController->index();
+                        return;
+                        
+                    }else {
+                        $err = 'Contraseña incorrecta';
+                    }
+                } else {
+                    $err = 'Usuario no encontrado';
                 }
-            } else {
-                echo 'usuario no encontrado';
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
             }
         }
         require_once(VIEWS_PATH . "login.php");
@@ -65,7 +77,12 @@ class UserController{
     }
 
     public function index(){
-        $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
+        try{
+            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
+
         require_once(VIEWS_PATH . "modifyProfile.php");
     }
 
@@ -75,8 +92,11 @@ class UserController{
 
             $profile = new Profile($firstName, $lastName, $dni);
             $profile->setIdUser($_SESSION['user']->getId());
-
-            $this->userProfileDaos->modify($profile);
+            try{
+                $this->userProfileDaos->modify($profile);
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
+            }
 
             $message = 'Cambios realizados con exito!'; 
             
