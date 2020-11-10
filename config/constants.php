@@ -10,5 +10,7 @@ define("VIEWS_PATH", "views/");
 define("CSS_PATH", FRONT_ROOT.VIEWS_PATH . "css/");
 define("JS_PATH", FRONT_ROOT.VIEWS_PATH . "js/");
 
+define("DEFAULT_POSTER", FRONT_ROOT . "views/img/default_poster.png");
+
 include_once('auth.php');
 ?>

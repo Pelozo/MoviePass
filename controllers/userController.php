@@ -42,7 +42,7 @@ class UserController{
         }
     }
 
-    public function login($email, $password){
+    public function login($email = null, $password = null){
 
         if(isset($email, $password)){
             $user = $this->daos->getByEmail($email);

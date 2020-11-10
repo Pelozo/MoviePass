@@ -103,7 +103,7 @@ class ShowController{
     public function modify($id, $idMovie = null, $idCinema = null, $idRoom = null, $date = null){
 
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
