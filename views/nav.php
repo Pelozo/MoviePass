@@ -1,6 +1,7 @@
 <nav class="navBar">
      <div>
-          <a href='<?=FRONT_ROOT?>'><img src='<?=FRONT_ROOT?>views/logo/example.png' alt='logo' width=75px></a>
+          <a href='<?=FRONT_ROOT?>'><img src='<?=FRONT_ROOT?>views/logo/example.png' alt='logo' width=100px></a>
+       
           <?php 
           if(isset($_SESSION['user'])){
                echo 'Bienvenido, ' . $_SESSION['user']->getEmail();
