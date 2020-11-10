@@ -43,7 +43,8 @@ class MovieController{
         $this->index();
     }
     
-
+    
+    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
     public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
         if($name == "all") $name = null;
         try{
@@ -65,20 +66,7 @@ class MovieController{
         echo "<pre>";
         var_dump($movie);
         echo "</pre>";
-    }
-
-    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
-    public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
-        if($name == "all") $name = null;
-        $movies = $this->movieDaos->getMoviesFiltered($genreRequired, $yearRequired, $name, $page);
-        echo json_encode($movies);
-    }
-
-    public function displayBillboard(){        
-        $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
-        require_once(VIEWS_PATH . "movieShows.php");
-    }    
-
+    } 
     
     //this function returns json becuase it'll be called using ajax in the body of views/movieShows.php
     public function getShows($genre = 'all', $date = 'all'){

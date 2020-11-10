@@ -123,36 +123,38 @@ class ShowController{
         //check if form was sent
 
         if(isset($idMovie, $idCinema, $idRoom, $date)){
+            try{
 
-            $room = $this->roomDaos->getById($idRoom);
-            $movie = $this->movieDaos->getById($idMovie);
+                $room = $this->roomDaos->getById($idRoom);
+                $movie = $this->movieDaos->getById($idMovie);
 
-            $show = new Show($movie, $room, $date);
-            $show->setId($id);
-            $cinemaShow = $this->cinemaDaos->getById($idCinema);
+                $show = new Show($movie, $room, $date);
+                $show->setId($id);
+                $cinemaShow = $this->cinemaDaos->getById($idCinema);
 
-            $err = null;
+                $err = null;
 
-            $result = $this->showDaos->verifyShowDay($show, $idCinema);
-            if(!empty($result)){
-                foreach($result as $res){
-                    if($res['id_cinema'] != $idCinema){
-                        $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                $result = $this->showDaos->verifyShowDay($show, $idCinema);
+                if(!empty($result)){
+                    foreach($result as $res){
+                        if($res['id_cinema'] != $idCinema){
+                            $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                        }
                     }
-                }
+                        
+                    $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                     
-                $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
-                
-                $valid = $this->verify15Minutes($shows3Days, $show);
-                
-                if(!$valid){
-                    $err = 'Ya hay una funcion a esa hora.';
-                }
-                if($err == null){
-                    $this->showDaos->modify($show);
-                    $this->index();
-                } else {
-                    require_once(VIEWS_PATH . "addShow.php");
+                    $valid = $this->verify15Minutes($shows3Days, $show);
+                    
+                    if(!$valid){
+                        $err = 'Ya hay una funcion a esa hora.';
+                    }
+                    if($err == null){
+                        $this->showDaos->modify($show);
+                        $this->index();
+                    } else {
+                        require_once(VIEWS_PATH . "addShow.php");
+                    }
                 }
             }catch(\Exception $err){
                 $err = DATABASE_ERR;
