@@ -29,11 +29,8 @@ class MovieController{
 
     public function update(){
 
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
-            header("HTTP/1.1 403");
-            //or redirect to login, idk
-            //$c = new UserController();
-            //$c->login();            
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");        
             return;
         }
 
@@ -58,6 +55,7 @@ class MovieController{
     }
 
 
+
     public function details($id){
         try{
             $movie = $this->movieDaos->getById($id);
@@ -69,10 +67,21 @@ class MovieController{
         echo "</pre>";
     }
 
-    
-    
-    public function getShows($genre = 'all', $date = 'all'){
+    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
+    public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
+        if($name == "all") $name = null;
+        $movies = $this->movieDaos->getMoviesFiltered($genreRequired, $yearRequired, $name, $page);
+        echo json_encode($movies);
+    }
 
+    public function displayBillboard(){        
+        $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
+        require_once(VIEWS_PATH . "movieShows.php");
+    }    
+
+    
+    //this function returns json becuase it'll be called using ajax in the body of views/movieShows.php
+    public function getShows($genre = 'all', $date = 'all'){
         if($genre == 'all')$genre = null;
         if($date == 'all')$date = null;
         
@@ -83,6 +92,7 @@ class MovieController{
             echo '[]';
         }
         
+
     }
 
 }

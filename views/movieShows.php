@@ -1,4 +1,4 @@
-
+<?php include(VIEWS_PATH."header.php"); ?>
 <main>
     <h1 class="indexTitle">Cartelera</h1>
     <h2>Ver Por: </h2>
@@ -57,11 +57,17 @@ function showResult(page = 1) {
       if(movies.length == 0){
         $('#moviesList').append('No se encontraron resultados');
       }else{
+        //loop all movies
         for(var index in movies) {
-          //console.log(index, movies[index]);
+          //if movie doesnt have a poster add a default one
+          if(movies[index]['img'] == null){
+            movies[index]['img'] = "<?=DEFAULT_POSTER?>"; 
+          }
+
+          //add movie to list
           $('#moviesList').append('<a href="<?=FRONT_ROOT?>movie/details/' + movies[index]['id'] + '" ><img class="img-responsive" style="max-width: 20%" src="' + movies[index]['img'] + '" alt="' + movies[index]['title'] + '" ></a>');
-          //console.log(movies[index]['id']);
-          //$('#moviesList').append(movies[index]['id_movie']);
+
+
         }
       }    
       
@@ -78,3 +84,4 @@ function showResult(page = 1) {
   xmlhttp.send();
 }
 </script>
+<?php include(VIEWS_PATH."footer.php"); ?>

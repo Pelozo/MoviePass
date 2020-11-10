@@ -1,5 +1,5 @@
 <!--Totally stolen from https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=table-with-add-and-delete-row-feature -->
-
+<?php include(VIEWS_PATH."header.php"); ?>
 <script>
 $(document).ready(function() {
     $('#cinemaTable').DataTable();
@@ -58,3 +58,4 @@ $(document).ready(function() {
         </table>
     </div>
 </div>
+<?php include(VIEWS_PATH."footer.php"); ?>

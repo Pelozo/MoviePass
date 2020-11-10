@@ -13,7 +13,7 @@ class CinemaController{
     public function index(){
 
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
@@ -27,21 +27,14 @@ class CinemaController{
     }
 
 
-    public function add(){
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+    public function add($name = null, $address= null, $city = null, $province= null, $postal=null){
+         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");
             return;
         }
-
-
         
-        if(isset($_POST['name'], $_POST['address'],$_POST['city'], $_POST['province'],$_POST['postal'])){ //se pasa como parámetro
+        if(isset($name, $address, $city, $province, $postal)){
 
-            $name = $_POST['name'];
-            $address = $_POST['address'];
-            $city = $_POST['city'];
-            $province = $_POST['province'];
-            $postal = $_POST['postal'];
 
             $cinema = new Cinema($name, $address, $city, $postal, $province);
 
@@ -49,11 +42,14 @@ class CinemaController{
             $required = array('name' => 'nombre',  'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
+
                   $err = ucfirst($required[$field]) . " no puede estar vacio";
+
                   require_once(VIEWS_PATH . "addCinema.php");
                   return;
                 }
             }
+
             try{
                 //add cinema to db
                 $this->cinemaDaos->add($cinema);
@@ -67,25 +63,20 @@ class CinemaController{
             } else {
                 require_once(VIEWS_PATH . "addCinema.php");
             }
+
     }
 
 
-    public function modify($id){
+    public function modify($id, $name = null, $address= null, $city = null, $province= null, $postal=null){
  
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
-        //check if form was sent
-        if(isset($_POST['id'], $_POST['name'], $_POST['address'], $_POST['city'], $_POST['province'],$_POST['postal'])){
 
-            $id = $_POST['id'];
-            $name = $_POST['name'];
-            $address = $_POST['address'];
-            $city = $_POST['city'];
-            $province = $_POST['province'];
-            $postal = $_POST['postal'];
+        //check if form was sent
+        if(isset($id, $name, $address, $city, $province, $postal)){
 
             $cinema = new Cinema($name, $address, $city, $postal, $province);
             //replace new id with old id
@@ -95,7 +86,9 @@ class CinemaController{
             $required = array('name' => 'nombre', 'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
+                  
                   $err = ucfirst($required[$field]) . " no puede estar vacio";
+
                   require_once(VIEWS_PATH . "addCinema.php");
                   return;
                 }
@@ -110,6 +103,7 @@ class CinemaController{
                 require_once(VIEWS_PATH . "addCinema.php");
             }
         }else{
+
             try{
                 //get cinema from id
                 $cinema = $this->cinemaDaos->getById($id);
@@ -121,13 +115,14 @@ class CinemaController{
             } catch(\Exception $err){
                 $err = DATABASE_ERR;
             }
+
         require_once(VIEWS_PATH . "addCinema.php");
         }
     }
 
     public function remove($id){
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }

@@ -1,3 +1,4 @@
+<?php include(VIEWS_PATH."header.php"); ?>
 <main class="">
 <div style="margin-top:50px" class="container-fluid">
 	<div class="row">
@@ -178,10 +179,6 @@ function getRooms() {
 
 
 
-//$("a").attr("href", "http://www.google.com/")
-
-
-
 $(".movieButton").attr("href", "#");
 
 $(".movieButton").on('click', function(event){
@@ -208,18 +205,22 @@ function showResult(page = 1) {
       //Clear all movies
       $('#moviesList').html("")
 
+      //parse movies from json
       var movies = JSON.parse(this.responseText);
-
-      //console.log(movies);
-
+      
       if(movies.length == 0){
         $('#moviesList').append('No se encontraron resultados');
       }else{
+        //loop all movies
         for(var index in movies) {
-          //console.log(index, movies[index]);
+          //if movie doesnt have a poster add a default one
+          if(movies[index]['img'] == null){
+            movies[index]['img'] = "<?=DEFAULT_POSTER?>"; 
+          }
+
+          //add movie to list
           $('#moviesList').append('<a href="#" onclick="selectMovie(' + movies[index]['id'] + ',\'' + movies[index]['title'] + '\', \'' + movies[index]['img'] + '\')"><img class="img-responsive" style="max-width: 20%" src="' + movies[index]['img'] + '" alt="' + movies[index]['title'] + '" ></a>');
-          console.log(movies[index]['id']);
-          //$('#moviesList').append(movies[index]['id_movie']);
+          
         }
       }    
       
@@ -238,3 +239,4 @@ function showResult(page = 1) {
   xmlhttp.send();
 }
 </script>
+<?php include(VIEWS_PATH."footer.php"); ?>

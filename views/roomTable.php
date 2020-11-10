@@ -1,4 +1,5 @@
 <!--Totally stolen from https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=table-with-add-and-delete-row-feature -->
+<?php include(VIEWS_PATH."header.php"); ?>
 <div class="table-responsive">
     <div class="table-wrapper">
         <div class="table-title">
@@ -36,9 +37,9 @@
                     <td><?=$room->getCapacity()?></td>
                     <td><?=$room->getPrice()?></td>
                     <td>
-                        <form action="<?=FRONT_ROOT?>room/modify/" method="post">
-                            <input type="hidden" name="id" value="<?=$room->getId()?>">
+                        <form action="<?=FRONT_ROOT?>room/modify/" method="post">                        
                             <input type="hidden" name="idCinema" value="<?=$cinema->getId()?>">
+                            <input type="hidden" name="id" value="<?=$room->getId()?>">
                             <button class="material-icons" onclick="this.form.submit()">&#xE254;</i>                             
                         </form>
                         
@@ -54,3 +55,4 @@
         </table>
     </div>
 </div>
+<?php include(VIEWS_PATH."footer.php"); ?>

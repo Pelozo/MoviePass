@@ -1,3 +1,4 @@
+<?php include(VIEWS_PATH."header.php"); ?>
 <h1 class="indexTitle">Registrarse</h1>
 <form action='signup' method='POST'>
     <h2>Datos de la cuenta: </h2>
@@ -9,3 +10,4 @@
     <br>DNI<input type='text' name='dni' placeholder='Ingrese su DNI'>
     <br><button>Confirmar</button>
 </form>
+<?php include(VIEWS_PATH."footer.php"); ?>

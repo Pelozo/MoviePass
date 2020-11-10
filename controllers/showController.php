@@ -39,7 +39,7 @@ class ShowController{
         require_once(VIEWS_PATH . "showTable.php");
     }
 
-    public function add(){
+    public function add($idMovie = null, $idCinema = null, $idRoom = null, $date = null){
 
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
@@ -58,18 +58,13 @@ class ShowController{
         }
 
 
-        if ($_POST){
-            
-            //get params
-            $idMovie = $_POST['movieId'];
-            $date = $_POST['time'];
-            $idRoom = $_POST['roomId'];
-            $idCinema = $_POST['cinemaId'];
-            
+        if (isset($idMovie, $date, $idRoom, $idCinema)){
+      
             $err = null;
 
             if ($idMovie == null){
                 $err = 'Por favor, seleccione una película';
+
                 require_once(VIEWS_PATH . "addShow.php");
                 
             } else {
@@ -84,6 +79,7 @@ class ShowController{
                             }
                         }
                     }
+
                     $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                     $valid = $this->verify15Minutes($shows3Days, $show);
                     
@@ -98,6 +94,7 @@ class ShowController{
                     }
                 }catch(\Exception $err){
                     $err = DATABASE_ERR;
+
                     require_once(VIEWS_PATH . "addShow.php");
                 }
             }
@@ -106,11 +103,10 @@ class ShowController{
         }
     }
 
-
-    public function modify($id){
+    public function modify($id, $idMovie = null, $idCinema = null, $idRoom = null, $date = null){
 
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
@@ -125,26 +121,23 @@ class ShowController{
         
         
         //check if form was sent
-        if(isset($_POST['movieId'], $_POST['roomId'], $_POST['time'], $_POST['cinemaId'])){
-            $idMovie = $_POST['movieId'];
-            $date = $_POST['time'];
-            $idRoom = $_POST['roomId'];
-            $idCinema = $_POST['cinemaId'];
-            try{
-                $room = $this->roomDaos->getById($idRoom);
-                $movie = $this->movieDaos->getById($idMovie);
-                $show = new Show($movie, $room, $date);
-                $show->setId($_POST['id']);
-                $cinemaShow = $this->cinemaDaos->getById($idCinema);
-    
-                $err = null;
-    
-                $result = $this->showDaos->verifyShowDay($show, $idCinema);
-                if(!empty($result)){
-                    foreach($result as $res){
-                        if($res['id_cinema'] != $idCinema){
-                            $err = 'No se puede agregar la misma película un mismo día a distintos cines';
-                        }
+
+        if(isset($idMovie, $idCinema, $idRoom, $date)){
+
+            $room = $this->roomDaos->getById($idRoom);
+            $movie = $this->movieDaos->getById($idMovie);
+
+            $show = new Show($movie, $room, $date);
+            $show->setId($id);
+            $cinemaShow = $this->cinemaDaos->getById($idCinema);
+
+            $err = null;
+
+            $result = $this->showDaos->verifyShowDay($show, $idCinema);
+            if(!empty($result)){
+                foreach($result as $res){
+                    if($res['id_cinema'] != $idCinema){
+                        $err = 'No se puede agregar la misma película un mismo día a distintos cines';
                     }
                 }
                     
@@ -159,12 +152,11 @@ class ShowController{
                     $this->showDaos->modify($show);
                     $this->index();
                 } else {
-                    require_once(VIEWS_PATH . "header.php");
                     require_once(VIEWS_PATH . "addShow.php");
-                    require_once(VIEWS_PATH . "footer.php");
                 }
             }catch(\Exception $err){
                 $err = DATABASE_ERR;
+
                 require_once(VIEWS_PATH . "addShow.php");
             }
         } else {

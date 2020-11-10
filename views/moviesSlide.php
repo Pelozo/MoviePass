@@ -1,3 +1,4 @@
+<?php include(VIEWS_PATH."header.php"); ?>
 <main>
   <br>
     Buscar por: 
@@ -79,3 +80,4 @@ function showResult(page = 1) {
   xmlhttp.send();
 }
 </script>
+<?php include(VIEWS_PATH."footer.php"); ?>
