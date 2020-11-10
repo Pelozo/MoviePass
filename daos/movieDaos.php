@@ -109,7 +109,7 @@ class MovieDaos extends BaseDaos{
         return $connection->executeWithAssoc($query);
     }
 
-    const DEFAULT_POSTER = FRONT_ROOT . "views/img/default_poster.png";
+    const DEFAULT_POSTER = FRONT_ROOT . "views/img/default_poster.png"; //esconder esto en el controller o whatever
 
     public function constructMovie($movie){
         //add default poster if needed
