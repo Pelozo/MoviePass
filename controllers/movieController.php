@@ -49,7 +49,6 @@ class MovieController{
 
     public function displayBillboard(){        
         $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "movieShows.php");
     }    
     
