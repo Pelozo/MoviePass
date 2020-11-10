@@ -39,7 +39,7 @@ class ShowController{
         require_once(VIEWS_PATH . "footer.php");
     }
 
-    public function add(){
+    public function add($idMovie = null, $idCinema = null, $idRoom = null, $date = null){
 
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
@@ -53,14 +53,9 @@ class ShowController{
 
         $cinemas = $this->cinemaDaos->getAllWithRooms();
 
-        if ($_POST){
-            
-            //get params
-            $idMovie = $_POST['movieId'];
-            $date = $_POST['time'];
-            $idRoom = $_POST['roomId'];
-            $idCinema = $_POST['cinemaId'];
-            
+
+        //check if form was sent
+        if (isset($idMovie, $date, $idRoom, $idCinema)){
             $error = null;
 
             if ($idMovie == null){
@@ -105,8 +100,7 @@ class ShowController{
         }
     }
 
-
-    public function modify($id){
+    public function modify($id, $idMovie = null, $idCinema = null, $idRoom = null, $date = null){
 
         //check if user is logged and has admin privileges
         if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
@@ -119,17 +113,13 @@ class ShowController{
         $cinemas = $this->cinemaDaos->getAllWithRooms();
         
         //check if form was sent
-        if(isset($_POST['movieId'], $_POST['roomId'], $_POST['time'], $_POST['cinemaId'])){
-            $idMovie = $_POST['movieId'];
-            $date = $_POST['time'];
-            $idRoom = $_POST['roomId'];
-            $idCinema = $_POST['cinemaId'];
+        if(isset($idMovie, $idCinema, $idRoom, $date)){
 
             $room = $this->roomDaos->getById($idRoom);
             $movie = $this->movieDaos->getById($idMovie);
 
             $show = new Show($movie, $room, $date);
-            $show->setId($_POST['id']);
+            $show->setId($id);
             $cinemaShow = $this->cinemaDaos->getById($idCinema);
 
             $error = null;

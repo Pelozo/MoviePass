@@ -6,11 +6,11 @@
 		<div class="col-sm-2"></div>		
 		<div class="col-sm-6 bg-light boxStyle">
 			<form name="theform" action="" method="POST">
-                <?php if(isset($cinema)){?>
-                    <input type="hidden" name="id" value="<?=$cinema->getId()?>">
-                <?php }?>
+                <input type="hidden" name="idCinema" value="<?=$idCinema?>">
+                <input type="hidden" name="id" value="<?php if(isset($room)) echo $room->getId()?>">
 
                 <div class="form-group">
+                
                     <label >Nombre<span class="asteriskField">*</span></label>
                     <input class="form-control" name="name" type="text" value="<?php if(isset($room)) echo $room->getName()?>" size="20"><br>
                 <div class="form-group">
@@ -21,8 +21,8 @@
                     <label>Precio de entrada<span class="asteriskField">*</span></label>
                     <input class="form-control" name="ticket" type="number" value="<?php if(isset($room)) echo $room->getPrice()?>"  min="0" size="20">
                 </div>
-                <input type="hidden" name="idCinema" value="<?=$idCinema?>">
-                <input type="hidden" name="id" value="<?php if(isset($room)) echo $room->getId()?>">
+
+
                 <?php if(isset($error)){?>
                     <?=$error?>
                 <?php }?>
