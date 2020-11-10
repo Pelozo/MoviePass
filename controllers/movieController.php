@@ -55,7 +55,7 @@ class MovieController{
 
         require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "movieShows.php");
-        require_once(VIEWS_PATH . "footer.php");
+        require_once(VIEWS_PATH . "footer.php"); //agregar el footer y el header en las vistas
     }    
     
     public function getShows($genre = 'all', $date = 'all'){
