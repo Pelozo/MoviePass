@@ -37,9 +37,9 @@
                     <td><?=$room->getCapacity()?></td>
                     <td><?=$room->getPrice()?></td>
                     <td>
-                        <form action="<?=FRONT_ROOT?>room/modify/" method="post">
-                            <input type="hidden" name="id" value="<?=$room->getId()?>">
+                        <form action="<?=FRONT_ROOT?>room/modify/" method="post">                        
                             <input type="hidden" name="idCinema" value="<?=$cinema->getId()?>">
+                            <input type="hidden" name="id" value="<?=$room->getId()?>">
                             <button class="material-icons" onclick="this.form.submit()">&#xE254;</i>                             
                         </form>
                         

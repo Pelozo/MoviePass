@@ -25,28 +25,22 @@ class RoomController{
         require_once(VIEWS_PATH . "roomTable.php");
     }
 
+    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
     public function getByCinema($idCinema){
         echo json_encode($this->roomDaos->getByCinema($idCinema));
     }
 
-    public function add(){
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
-            header("HTTP/1.1 403");
-            //or redirect to login, idk
-            //$c = new UserController();
-            //$c->login();            
+    public function add($idCinema = null, $id = null, $name = null, $capacity = null, $ticket = null){
+        
+        //check if user is logged and has admin privileges
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");;            
             return;
         }
-        $idCinema = $_POST['idCinema'];
         
-        if(isset($_POST['name'], $_POST['capacity'], $_POST['ticket'])){
+        if(isset($name, $capacity, $ticket)){
 
-            $name = $_POST['name'];
-            $capacity = $_POST['capacity'];
-            $ticketPrice = $_POST['ticket'];
-            $idCinema = $_POST['idCinema'];
-
-            $room = new Room($name, $capacity, $ticketPrice, $idCinema);
+            $room = new Room($name, $capacity, $ticket, $idCinema);
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
@@ -67,24 +61,18 @@ class RoomController{
     
     }
 
-    public function modify($id){
+    public function modify($idCinema, $id, $name = null, $capacity = null, $ticket = null){
  
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
-        $idCinema = $_POST['idCinema'];
+        
         //check if form was sent
-        if(isset($_POST['id'], $_POST['name'], $_POST['capacity'], $_POST['ticket'], $_POST['idCinema'])){
+        if(isset($idCinema, $name, $capacity, $ticket, $id)){
 
-            $id = $_POST['id'];
-            $name = $_POST['name'];
-            $capacity = $_POST['capacity'];
-            $idCinema = $_POST['idCinema'];
-            $ticketPrice = $_POST['ticket'];
-
-            $room = new Room($name, $capacity, $ticketPrice);
+            $room = new Room($name, $capacity, $ticket);
             //replace null id with id
             $room->setId($id);
             //add cinema id
@@ -105,8 +93,9 @@ class RoomController{
             $this->show($idCinema);
         }else{
             
-        //get cinema from id
-        $room = $this->roomDaos->getById($id);
+            //get cinema from id
+            $room = $this->roomDaos->getById($id);
+
 
         //cinema not found
         if(empty($room)){
@@ -115,6 +104,7 @@ class RoomController{
         }
         
         require_once(VIEWS_PATH . "addRoom.php");
+
         }
     }
 

@@ -13,14 +13,12 @@ class CinemaController{
     public function index(){
 
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
 
-
         $cinemas = $this->cinemaDaos->getAll();
-        $modalView = 'login.php';
         require_once(VIEWS_PATH . "cinemaTable.php");
     }
 
@@ -29,25 +27,14 @@ class CinemaController{
     }
 
 
-    public function add(){
+    public function add($name = null, $address= null, $city = null, $province= null, $postal=null){
 
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
-            header("HTTP/1.1 403");
-            //or redirect to login, idk
-            //$c = new UserController();
-            //$c->login();            
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");           
             return;
         }
-
-
         
-        if(isset($_POST['name'], $_POST['address'],$_POST['city'], $_POST['province'],$_POST['postal'])){
-
-            $name = $_POST['name'];
-            $address = $_POST['address'];
-            $city = $_POST['city'];
-            $province = $_POST['province'];
-            $postal = $_POST['postal'];
+        if(isset($name, $address, $city, $province, $postal)){
 
             $cinema = new Cinema($name, $address, $city, $postal, $province);
 
@@ -72,22 +59,16 @@ class CinemaController{
     }
 
 
-    public function modify($id){
+    public function modify($id, $name = null, $address= null, $city = null, $province= null, $postal=null){
  
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
-        //check if form was sent
-        if(isset($_POST['id'], $_POST['name'], $_POST['address'], $_POST['city'], $_POST['province'],$_POST['postal'])){
 
-            $id = $_POST['id'];
-            $name = $_POST['name'];
-            $address = $_POST['address'];
-            $city = $_POST['city'];
-            $province = $_POST['province'];
-            $postal = $_POST['postal'];
+        //check if form was sent
+        if(isset($id, $name, $address, $city, $province, $postal)){
 
             $cinema = new Cinema($name, $address, $city, $postal, $province);
             //replace new id with old id
@@ -123,7 +104,7 @@ class CinemaController{
 
     public function remove($id){
         //check if user is logged and has admin privileges
-        if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }

@@ -15,14 +15,9 @@ class UserController{
         $this->userProfileDaos = new UserProfileDaos();
     }
 
-    public function signup(){
+    public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
         
-        if($_POST){            
-            $email = $_POST['email'];            
-            $password = $_POST['password'];
-            $firstName = $_POST['firstName'];            
-            $lastName = $_POST['lastName'];  
-            $dni = $_POST['dni'];            
+        if(isset($email, $password, $firstName, $lastName, $dni)){        
             
             if($this->daos->exists($email)){
                 echo 'Ya hay un usuario registrado con ese email';
@@ -41,10 +36,9 @@ class UserController{
         }
     }
 
-    public function login(){
-        if($_POST){
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+    public function login($email = null, $password = null){
+
+        if(isset($email, $password)){
             $user = $this->daos->getByEmail($email);
             if($user != null){
                 if ($user->getPassword() == $password){
@@ -55,11 +49,9 @@ class UserController{
                     return;
 
                 }else {
-                    //TODO
                     echo 'contraseña incorrecta';
                 }
             } else {
-                //TODO
                 echo 'usuario no encontrado';
             }
         }
@@ -78,12 +70,8 @@ class UserController{
     }
 
 
-    public function profile(){
-        if(isset($_POST['firstName'], $_POST['lastName'],$_POST['dni'])){
-
-            $firstName = $_POST['firstName'];
-            $lastName = $_POST['lastName'];
-            $dni = $_POST['dni'];
+    public function profile($firstName = null, $lastName = null, $dni = null){
+        if(isset($firstName, $lastName, $dni)){
 
             $profile = new Profile($firstName, $lastName, $dni);
             $profile->setIdUser($_SESSION['user']->getId());
