@@ -19,10 +19,7 @@ class CinemaController{
         }
 
         $cinemas = $this->cinemaDaos->getAll();
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "cinemaTable.php");
-        require_once(VIEWS_PATH . "footer.php");
-
     }
 
     public function getAll(){
@@ -46,9 +43,7 @@ class CinemaController{
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
                   $error = ucfirst($required[$field]) . " no puede estar vacio";
-                  require_once(VIEWS_PATH . "header.php");
                   require_once(VIEWS_PATH . "addCinema.php");
-                  require_once(VIEWS_PATH . "footer.php");
                   return;
                 }
             }
@@ -58,9 +53,7 @@ class CinemaController{
             //back to index
             $this->index();
         }else{
-            require_once(VIEWS_PATH . "header.php");
-            require_once(VIEWS_PATH . "addCinema.php");
-            require_once(VIEWS_PATH . "footer.php");        
+            require_once(VIEWS_PATH . "addCinema.php");        
         }
         
     }
@@ -86,9 +79,7 @@ class CinemaController{
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
                   $error = ucfirst($required[$field]) . " no puede estar vacio";
-                  require_once(VIEWS_PATH . "header.php");
                   require_once(VIEWS_PATH . "addCinema.php");
-                  require_once(VIEWS_PATH . "footer.php");
                   return;
                 }
             }
@@ -107,10 +98,7 @@ class CinemaController{
             $this->index();
             return;
         }
-        
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "addCinema.php");
-        require_once(VIEWS_PATH . "footer.php");
         }
     }
 

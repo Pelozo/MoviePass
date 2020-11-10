@@ -1,3 +1,4 @@
+<?php include(VIEWS_PATH."header.php"); ?>
 <main class="">
 
 <div style="margin-top:50px" class="container">
@@ -43,3 +44,4 @@
     </div> 
 </div> 
 </main>
+<?php include(VIEWS_PATH."footer.php"); ?>

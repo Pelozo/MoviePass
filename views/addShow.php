@@ -1,3 +1,4 @@
+<?php include(VIEWS_PATH."header.php"); ?>
 <main class="">
 <div style="margin-top:50px" class="container-fluid">
 	<div class="row">
@@ -238,3 +239,4 @@ function showResult(page = 1) {
   xmlhttp.send();
 }
 </script>
+<?php include(VIEWS_PATH."footer.php"); ?>
