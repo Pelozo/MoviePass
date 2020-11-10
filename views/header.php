@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-
+    <link rel="icon" href="<?=FRONT_ROOT?>views/logo/icon.png" type="image/x-icon"> 
 
     <title><?php echo (isset($title)) ? $title : "Movie Pass"?></title>
 </head>
