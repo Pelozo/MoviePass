@@ -53,9 +53,7 @@ class MovieController{
         
         $genres = $this->genreDaos->getAll(); //this is used later in the view to display a dropdown
 
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "movieShows.php");
-        require_once(VIEWS_PATH . "footer.php");
     }    
     
     public function getShows($genre = 'all', $date = 'all'){

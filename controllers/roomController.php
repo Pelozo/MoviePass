@@ -22,10 +22,7 @@ class RoomController{
         $cinema = $this->cinemaDaos->getById($id);
         $rooms = $this->roomDaos->getByCinema($id);
 
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "roomTable.php");
-        require_once(VIEWS_PATH . "footer.php");
-
     }
 
     public function getByCinema($idCinema){
@@ -56,9 +53,7 @@ class RoomController{
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
                   $error = ucfirst($required[$field]) . " no puede estar vacio";
-                  require_once(VIEWS_PATH . "header.php");
                   require_once(VIEWS_PATH . "addRoom.php");
-                  require_once(VIEWS_PATH . "footer.php");
                   return;
                 }
             }
@@ -67,9 +62,7 @@ class RoomController{
             //back to index
             $this->show($idCinema);
         }else{
-            require_once(VIEWS_PATH . "header.php");
-            require_once(VIEWS_PATH . "addRoom.php");
-            require_once(VIEWS_PATH . "footer.php");        
+            require_once(VIEWS_PATH . "addRoom.php");    
         }       
     
     }
@@ -102,9 +95,7 @@ class RoomController{
             foreach($required as $field => $name) {
                 if (empty($_POST[$field])) {
                   $error = ucfirst($required[$field]) . " no puede estar vacio";
-                  require_once(VIEWS_PATH . "header.php");
                   require_once(VIEWS_PATH . "addRoom.php");
-                  require_once(VIEWS_PATH . "footer.php");
                   return;
                 }
             }
@@ -123,9 +114,7 @@ class RoomController{
             //return;
         }
         
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "addRoom.php");
-        require_once(VIEWS_PATH . "footer.php");
         }
     }
 

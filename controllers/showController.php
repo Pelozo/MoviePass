@@ -34,9 +34,7 @@ class ShowController{
 
         $shows = $this->showDaos->getAll();
 
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "showTable.php");
-        require_once(VIEWS_PATH . "footer.php");
     }
 
     public function add(){
@@ -65,9 +63,7 @@ class ShowController{
 
             if ($idMovie == null){
                 $error = 'Por favor, seleccione una película';
-                require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "addShow.php");
-                require_once(VIEWS_PATH . "footer.php");
                 
             } else {
                 //create new show
@@ -93,15 +89,11 @@ class ShowController{
                     $this->showDaos->add($show);
                     $this->index();
                 } else {
-                    require_once(VIEWS_PATH . "header.php");
                     require_once(VIEWS_PATH . "addShow.php");
-                    require_once(VIEWS_PATH . "footer.php");
                 }
             }
         } else {
-            require_once(VIEWS_PATH . "header.php");
             require_once(VIEWS_PATH . "addShow.php");
-            require_once(VIEWS_PATH . "footer.php");
         }
     }
 
@@ -154,9 +146,7 @@ class ShowController{
                 $this->showDaos->modify($show);
                 $this->index();
             } else {
-                require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "addShow.php");
-                require_once(VIEWS_PATH . "footer.php");
             }
         } else {
             
@@ -176,10 +166,7 @@ class ShowController{
                 $this->index();
                 return;
             }
-            
-            require_once(VIEWS_PATH . "header.php");
             require_once(VIEWS_PATH . "addShow.php");
-            require_once(VIEWS_PATH . "footer.php");
         }
 
     }

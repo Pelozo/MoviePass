@@ -26,9 +26,7 @@ class UserController{
             
             if($this->daos->exists($email)){
                 echo 'Ya hay un usuario registrado con ese email';
-                require_once(VIEWS_PATH . "header.php");
                 require_once(VIEWS_PATH . "signup.php");
-                require_once(VIEWS_PATH . "footer.php");
             }else{
                 $user = new User($email,$password,2);
                 $this->daos->add($user); 
@@ -36,14 +34,10 @@ class UserController{
                 $profile = new Profile($firstName, $lastName, $dni);
                 $profile->setIdUser($_user->getId());
                 $this->userProfileDaos->add($profile);
-                require_once(VIEWS_PATH . "header.php");
-                require_once(VIEWS_PATH . "login.php");
-                require_once(VIEWS_PATH . "footer.php");          
+                require_once(VIEWS_PATH . "login.php");        
             } 
         } else {
-            require_once(VIEWS_PATH . "header.php");
             require_once(VIEWS_PATH . "signup.php");
-            require_once(VIEWS_PATH . "footer.php");
         }
     }
 
@@ -57,9 +51,7 @@ class UserController{
                     $_SESSION['user'] = $user;
                     $profile = $this->userProfileDaos->getById($user->getId());
                     $_SESSION['profile'] = $profile;
-                    require_once(VIEWS_PATH . "header.php");
                     header('location:' . FRONT_ROOT); //acá tendría que ir otra vista, o llamar o movieController->show() o algo así, no sé.
-                    require_once(VIEWS_PATH . "footer.php");
                     return;
 
                 }else {
@@ -71,11 +63,7 @@ class UserController{
                 echo 'usuario no encontrado';
             }
         }
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "login.php");
-        require_once(VIEWS_PATH . "footer.php");
-
-       
     }
 
     public function logout(){
@@ -86,9 +74,7 @@ class UserController{
 
     public function index(){
         $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
-        require_once(VIEWS_PATH . "header.php");
         require_once(VIEWS_PATH . "modifyProfile.php");
-        require_once(VIEWS_PATH . "footer.php");  
     }
 
 
@@ -106,10 +92,7 @@ class UserController{
 
             $message = 'Cambios realizados con exito!'; 
             
-            require_once(VIEWS_PATH . "header.php");
             require_once(VIEWS_PATH . "modifyProfile.php");
-            require_once(VIEWS_PATH . "footer.php");  
-
         }else{
             $this->index();       
         }

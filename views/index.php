@@ -1,4 +1,4 @@
-
+<?php include(VIEWS_PATH."header.php"); ?>
 <main>
     <h1 class="indexTitle">Cartelera</h1>
     <h2>Ver Por: </h2>
@@ -81,3 +81,4 @@ function showResult() {
   xmlhttp.send();
 }
 </script>
+<?php include(VIEWS_PATH."footer.php"); ?>
