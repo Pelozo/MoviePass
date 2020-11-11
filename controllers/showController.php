@@ -123,6 +123,7 @@ class ShowController{
         //check if form was sent
 
         if(isset($idMovie, $idCinema, $idRoom, $date)){
+
             try{
 
                 $room = $this->roomDaos->getById($idRoom);
@@ -141,21 +142,24 @@ class ShowController{
                             $err = 'No se puede agregar la misma película un mismo día a distintos cines';
                         }
                     }
-                        
-                    $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
-                    
-                    $valid = $this->verify15Minutes($shows3Days, $show);
-                    
-                    if(!$valid){
-                        $err = 'Ya hay una funcion a esa hora.';
-                    }
-                    if($err == null){
-                        $this->showDaos->modify($show);
-                        $this->index();
-                    } else {
-                        require_once(VIEWS_PATH . "addShow.php");
-                    }
                 }
+                        
+                $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
+                
+                $valid = $this->verify15Minutes($shows3Days, $show);
+                
+                if(!$valid){
+                    $err = 'Ya hay una funcion a esa hora.';
+                }
+
+                if($err == null){
+                    $this->showDaos->modify($show);
+                    
+                    $this->index();
+                } else {
+                    require_once(VIEWS_PATH . "addShow.php");
+                }
+                
             }catch(\Exception $err){
                 $err = DATABASE_ERR;
 
