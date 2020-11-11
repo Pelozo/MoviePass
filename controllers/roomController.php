@@ -48,7 +48,7 @@ class RoomController{
         
         if(isset($name, $capacity, $ticket)){
 
-            $room = new Room($name, $capacity, $ticket, $idCinema);
+            $room = new Room($name, $ticket, $capacity, $idCinema);
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
@@ -86,7 +86,7 @@ class RoomController{
         //check if form was sent
         if(isset($idCinema, $name, $capacity, $ticket, $id)){
 
-            $room = new Room($name, $capacity, $ticket);
+            $room = new Room($name, $ticket, $capacity);
             //replace null id with id
             $room->setId($id);
             //add cinema id
