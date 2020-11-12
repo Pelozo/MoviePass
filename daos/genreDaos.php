@@ -43,12 +43,17 @@ class GenreDaos  extends BaseDaos{
 
         $this->connection = Connection::getInstance();
         $genres = array();      
-        foreach($this->connection->executeWithAssoc($query, $params) as $genre){
-            
-            array_push($genres, new Genre($genre['id_genre'], $genre['name_genre']));
-
+        try{
+            foreach($this->connection->executeWithAssoc($query, $params) as $genre){
+                
+                array_push($genres, new Genre($genre['id_genre'], $genre['name_genre']));
+    
+            }
+            return $genres;
         }
-        return $genres;
+        catch(\Exception $ex){
+            throw $ex;
+        }
 
     }
 

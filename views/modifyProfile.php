@@ -25,8 +25,8 @@
                     <input class="form-control" name="dni" type="text" value="<?php if(isset($profile)) echo $profile->getDni()?>" size="20">                        
                 </div>
 
-                <?php if(isset($error)){?>
-                    <?=$error?>
+                <?php if(isset($err)){?>
+                    <?=$err?>
                 <?php }?>
 
                 <div class="form-group">

@@ -151,10 +151,8 @@ class ShowController{
                 if(!$valid){
                     $err = 'Ya hay una funcion a esa hora.';
                 }
-
                 if($err == null){
                     $this->showDaos->modify($show);
-                    
                     $this->index();
                 } else {
                     require_once(VIEWS_PATH . "addShow.php");
