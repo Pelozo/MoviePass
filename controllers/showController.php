@@ -123,6 +123,7 @@ class ShowController{
         //check if form was sent
 
         if(isset($idMovie, $idCinema, $idRoom, $date)){
+
             try{
 
                 $room = $this->roomDaos->getById($idRoom);
@@ -156,6 +157,7 @@ class ShowController{
                 } else {
                     require_once(VIEWS_PATH . "addShow.php");
                 }
+                
             }catch(\Exception $err){
                 $err = DATABASE_ERR;
 
