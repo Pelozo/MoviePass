@@ -225,6 +225,20 @@ class ShowController{
         return true;
     }
 
+    public function showDetails($id){
+        try{
+            $shows = $this->showDaos->getByIdMovie($id);
+        }catch(\Exception $err){
+            $err = DATABASE_ERR;
+        }
+        /*
+        echo "<pre>";
+        var_dump($shows);
+        echo "</pre>";
+        */
+        require_once(VIEWS_PATH . "selectedShow.php");
+    } 
+
 
 }
 

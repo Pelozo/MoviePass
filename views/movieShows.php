@@ -1,8 +1,8 @@
 <?php include(VIEWS_PATH."header.php"); ?>
 <main>
-    <h1 class="indexTitle">Cartelera</h1>
-    <h2>Ver Por: </h2>
-    <form>
+    <h1 class="indexTitle" style="margin-top:1em;">Cartelera</h1>
+    <h2 style="margin:1em;">Ver Por: </h2>
+    <form style="margin:2em;">
         <label for="genres">Genero:</label>
         <select name="genre" id="genres" onChange="showResult()">
             <option value="all">Todos</option>
@@ -65,7 +65,7 @@ function showResult(page = 1) {
           }
 
           //add movie to list
-          $('#moviesList').append('<a href="<?=FRONT_ROOT?>movie/details/' + movies[index]['id'] + '" ><img class="img-responsive" style="max-width: 20%" src="' + movies[index]['img'] + '" alt="' + movies[index]['title'] + '" ></a>');
+          $('#moviesList').append('<a href="<?=FRONT_ROOT?>show/showDetails/' + movies[index]['id'] + '" ><img class="img-responsive" style="margin:2em" width="200px" height="300px" src="' + movies[index]['img'] + '" alt="' + movies[index]['title'] + '" ></a>');
 
 
         }
