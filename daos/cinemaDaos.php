@@ -42,16 +42,19 @@ class CinemaDaos extends BaseDaos{
         $connection = Connection::getInstance();
 
         $result = array();
-
-        $cinemas = $connection->executeWithAssoc($query);
-
-        foreach($cinemas as $cinema){
-            $object = new Cinema($cinema['name_cinema'], $cinema['address_cinema'],$cinema['city_cinema'],$cinema['zip_cinema'],$cinema['province_cinema']);
-            $object->setId($cinema['id_cinema']);
-            $result[] = $object;
+        try{
+            $cinemas = $connection->executeWithAssoc($query);
+    
+            foreach($cinemas as $cinema){
+                $object = new Cinema($cinema['name_cinema'], $cinema['address_cinema'],$cinema['city_cinema'],$cinema['zip_cinema'],$cinema['province_cinema']);
+                $object->setId($cinema['id_cinema']);
+                $result[] = $object;
+            }
+            
+            return $result;
+        }catch(\Exception $ex){
+            throw $ex;
         }
-        
-        return $result;
     }
 }
 ?>

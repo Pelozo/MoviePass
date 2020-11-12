@@ -27,7 +27,7 @@ class CinemaController{
     }
 
 
-    public function add($name = null, $address= null, $city = null, $province= null, $postal=null){
+    public function add($name = null, $address= null, $city = null, $postal=null, $province= null){
          if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");
             return;

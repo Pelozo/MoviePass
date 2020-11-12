@@ -32,6 +32,7 @@ class UserController{
                     $profile = new Profile($firstName, $lastName, $dni);
                     $profile->setIdUser($_user->getId());
                     $this->userProfileDaos->add($profile);
+                    //$this->login();
                     require_once(VIEWS_PATH . "login.php");
                 } 
             } catch(\Exception $err){

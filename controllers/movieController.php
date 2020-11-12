@@ -44,7 +44,7 @@ class MovieController{
     }
     
     
-    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
+    //this function returns json because it'll be called using ajax in the body of views/addShow.php
     public function getMovies($genreRequired = "all", $yearRequired = "all", $name = "all", $page = 1){
         if($name == "all") $name = null;
         try{

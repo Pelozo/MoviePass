@@ -1,5 +1,5 @@
 <?php 
-namespace Config;
+namespace config;
 
 class Request{
     private $controller;

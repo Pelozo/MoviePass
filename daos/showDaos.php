@@ -26,38 +26,43 @@ class ShowDaos extends BaseDaos{
         ORDER BY s.datetime_show";
 
         $connection = Connection::getInstance();
-        $resultSet = $connection->executeWithAssoc($query);
-
-
-        $results = array();
-
-        foreach ($resultSet as $show){
-            $object = new show(
-                                new Movie(
-                                    $show['id_movie'],
-                                    $show['title_movie'], 
-                                    $show['overview_movie'], 
-                                    $show['img_movie'], 
-                                    $show['language_movie'],                                    
-                                    $this->genreDaos->getByMovie($show['id_movie']),                                    
-                                    $show['releaseDate_movie'],
-                                    $show['duration_movie']),
-                                new Room(
-                                    $show['name_room'],
-                                    $show['price_room'],
-                                    $show['capacity_room'],
-                                    $show['idCinema_room']
-                                ),
-                                $show['datetime_show']
-                            );
-            $object->getRoom()->setId($show['id_room']);
-            $object->setId($show['id_show']);
-            $results['shows'][] = $object;
-
-            $results['cinemas'][] = $show['name_cinema'];
+        try{
+            $resultSet = $connection->executeWithAssoc($query);
+    
+    
+            $results = array();
+    
+            foreach ($resultSet as $show){
+                $object = new show(
+                                    new Movie(
+                                        $show['id_movie'],
+                                        $show['title_movie'], 
+                                        $show['overview_movie'], 
+                                        $show['img_movie'], 
+                                        $show['language_movie'],                                    
+                                        $this->genreDaos->getByMovie($show['id_movie']),                                    
+                                        $show['releaseDate_movie'],
+                                        $show['duration_movie']),
+                                    new Room(
+                                        $show['name_room'],
+                                        $show['price_room'],
+                                        $show['capacity_room'],
+                                        $show['idCinema_room']
+                                    ),
+                                    $show['datetime_show']
+                                );
+                $object->getRoom()->setId($show['id_room']);
+                $object->setId($show['id_show']);
+                $results['shows'][] = $object;
+    
+                $results['cinemas'][] = $show['name_cinema'];
+            }
+    
+            return $results;
         }
-
-        return $results;
+        catch(\Exception $ex){
+            throw $ex;
+        }
         
     }
 
@@ -74,30 +79,35 @@ class ShowDaos extends BaseDaos{
 
         $connection = Connection::getInstance();
         $parameters['id_show'] = $id; 
-        $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
-
-        $object = new show(
-                            new Movie(
-                                $resultSet['id_movie'],
-                                $resultSet['title_movie'], 
-                                $resultSet['overview_movie'], 
-                                $resultSet['img_movie'], 
-                                $resultSet['language_movie'],                                    
-                                $this->genreDaos->getByMovie($resultSet['id_movie']),                                    
-                                $resultSet['releaseDate_movie'],
-                                $resultSet['duration_movie']),
-                            new Room(
-                                $resultSet['name_room'],
-                                $resultSet['price_room'],
-                                $resultSet['capacity_room'],
-                                $resultSet['idCinema_room']
-                            ),
-                            $resultSet['datetime_show']
-                        );
-        $object->getRoom()->setId($resultSet['id_room']);
-        $object->setId($resultSet['id_show']);
-
-        return $object;
+        try{
+            $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
+    
+            $object = new show(
+                                new Movie(
+                                    $resultSet['id_movie'],
+                                    $resultSet['title_movie'], 
+                                    $resultSet['overview_movie'], 
+                                    $resultSet['img_movie'], 
+                                    $resultSet['language_movie'],                                    
+                                    $this->genreDaos->getByMovie($resultSet['id_movie']),                                    
+                                    $resultSet['releaseDate_movie'],
+                                    $resultSet['duration_movie']),
+                                new Room(
+                                    $resultSet['name_room'],
+                                    $resultSet['price_room'],
+                                    $resultSet['capacity_room'],
+                                    $resultSet['idCinema_room']
+                                ),
+                                $resultSet['datetime_show']
+                            );
+            $object->getRoom()->setId($resultSet['id_room']);
+            $object->setId($resultSet['id_show']);
+    
+            return $object;
+        }
+        catch(\Exception $ex){
+            throw $ex;
+        }
     }
 
     public function add($show){
@@ -110,7 +120,12 @@ class ShowDaos extends BaseDaos{
         $params['datetime_show'] = $show->getDatetime();
 
         $this->connection = Connection::getInstance();
-        return $this->connection->executeNonQuery($query, $params);
+        try{
+            return $this->connection->executeNonQuery($query, $params);
+        }
+        catch(\Exception $ex){
+            throw $ex;
+        }
 
     }
 
@@ -152,9 +167,14 @@ class ShowDaos extends BaseDaos{
         $parameters['id_cinema'] = $idCinema;
         
         $connection = Connection::getInstance();
-        $resultSet = $connection->execute($query,$parameters);
-
-        return $resultSet;
+        try{
+            $resultSet = $connection->execute($query,$parameters);
+    
+            return $resultSet;
+        }
+        catch(\Exception $ex){
+            throw $ex;
+        }
     }
 
     public function verifyShowDatetimeOverlap($_show){

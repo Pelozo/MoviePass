@@ -214,7 +214,7 @@ function showResult(page = 1) {
         //loop all movies
         for(var index in movies) {
           //if movie doesnt have a poster add a default one
-          if(movies[index]['img'] == null){
+          if(movies[index]['img'] == null || movies[index]['img'] == 'http://image.tmdb.org/t/p/w500'){
             movies[index]['img'] = "<?=DEFAULT_POSTER?>"; 
           }
 
