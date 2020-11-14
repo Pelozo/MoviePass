@@ -5,6 +5,7 @@ use daos\cinemaDaos as CinemaDaos;
 use daos\GenreDaos as GenreDaos;
 use daos\MovieDaos as MovieDaos;
 use daos\RoomDaos as RoomDaos;
+use daos\PurchaseDaos as PurchaseDaos;
 use models\show as Show;
 use controllers\movieController as MovieController;
 
@@ -15,6 +16,7 @@ class ShowController{
     private $genreDaos;
     private $movieDaos;
     private $roomDaos;
+    private $purchaseDaos;
 
     public function __construct(){
         $this->showDaos = new ShowDaos();       
@@ -22,6 +24,7 @@ class ShowController{
         $this->genreDaos = GenreDaos::getInstance();  
         $this->movieDaos = new MovieDaos();  
         $this->roomDaos = new RoomDaos();  
+        $this->purchaseDaos = new PurchaseDaos();  
     }
 
     public function index(){
@@ -230,14 +233,21 @@ class ShowController{
     public function showDetails($id){
         try{
             $shows = $this->showDaos->getByIdMovie($id);
+
+            $availableShows = array();
+            
+            //verify if theres available tickets in the room of the show
+            foreach($shows as $show){
+                $ticketsSold = $this->purchaseDaos->getSoldTicketsByShow($show->getId());
+                $roomCapacity = $show->getRoom()->getCapacity();
+                if(($roomCapacity - $ticketsSold) > 0){
+                    array_push($availableShows, $show);
+                }
+            }
+
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
-        /*
-        echo "<pre>";
-        var_dump($shows);
-        echo "</pre>";
-        */
         require_once(VIEWS_PATH . "selectedShow.php");
     } 
 

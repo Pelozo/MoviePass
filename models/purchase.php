@@ -2,17 +2,20 @@
 namespace models;
 
 class Purchase{
-    private $id;
-    private $tickets_quantity;
+	private $id;
+	private $user;
+	private $show;
+    private $ticketsQuantity;
     private $discount;
     private $date;
     private $total;
 
-    public function __construct($tickets_quantity = '', $discount = '', $date = '', $total = ''){
-        $this->tickets_quantity = $tickets_quantity;
+    public function __construct($user = '', $show = '', $ticketsQuantity = '', $discount = '', $date = ''){
+		$this->user = $user;
+        $this->show = $show;
+        $this->ticketsQuantity = $ticketsQuantity;
         $this->discount = $discount;
         $this->date = $date;
-        $this->total = $total;
     }
 
     public function getId(){
@@ -21,14 +24,30 @@ class Purchase{
 
     public function setId($id){
         $this->id = $id;
+	}
+	
+	public function getUser(){
+        return $this->user;
     }
 
-    public function getTickets_quantity(){
-		return $this->tickets_quantity;
+    public function setUser($user){
+        $this->user = $user;
+	}
+	
+	public function getShow(){
+        return $this->show;
+    }
+
+    public function setShow($show){
+        $this->show = $show;
+    }
+
+    public function getTicketsQuantity(){
+		return $this->ticketsQuantity;
 	}
 
-	public function setTickets_quantity($tickets_quantity){
-		$this->tickets_quantity = $tickets_quantity;
+	public function setTicketsQuantity($ticketsQuantity){
+		$this->ticketsQuantity = $ticketsQuantity;
 	}
 
 	public function getDiscount(){

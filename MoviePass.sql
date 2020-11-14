@@ -68,6 +68,25 @@ create table shows (id_show int auto_increment,
                     constraint fk_idRoom foreign key(idRoom_show) references rooms(id_room)
                     );
 
+create table purchases (id_purchase int auto_increment,
+						idUser_purchase int not null,
+                        idShow_purchase int not null,
+                        date_purchase datetime not null,
+                        ticketsQuantity_purchase int not null,
+                        discount_purchase float not null,
+                        total_purchase int not null,
+                        constraint pk_idPurchase primary key (id_purchase),
+                        constraint fk_idUserPurchase foreign key (idUser_purchase) references users (id_user),
+                        constraint fk_idShowPurchase foreign key (idShow_purchase) references shows (id_show)
+                        );
+                        
+create table tickets (id_ticket int auto_increment,
+					  idPurchase_ticket int not null,
+                      ticketNumber_ticket int not null,
+                      qr_ticket varchar (100),
+                      constraint pk_idTicket primary key (id_ticket),
+                      constraint fk_idPurchaseTicket foreign key (idPurchase_ticket) references purchases (id_purchase)
+					  );
 
 INSERT INTO rols (id_rol, description_rol) VALUES (1, 'admin');
 INSERT INTO rols (id_rol, description_rol) VALUES (2, 'user');
@@ -150,3 +169,24 @@ WHERE s.datetime_show > now()
 group by m.id_movie;
 
 INSERT INTO `shows` VALUES (29,337401,'2020-10-27 14:11:00',1),(30,337401,'2020-10-27 14:20:00',1),(31,337401,'2020-10-28 14:25:00',4),(32,4291,'2020-10-22 10:49:00',2),(33,78450,'2020-10-31 14:56:00',3),(34,213,'2020-10-29 14:20:00',5),(35,468,'2020-10-30 14:20:00',5),(36,4291,'2020-10-31 14:20:00',6),(37,86835,'2020-11-01 14:20:00',3),(38,340102,'2020-11-02 14:20:00',1),(39,11194,'2020-11-04 14:20:00',2),(40,11423,'2020-11-05 14:20:00',3),(41,446893,'2020-11-03 14:20:00',4),(42,446893,'2020-11-03 14:20:00',4),(43,669770,'2020-11-03 14:20:00',3),(44,669665,'2020-11-03 14:20:00',2),(45,678999,'2020-11-03 14:20:00',1),(46,684308,'2020-11-03 14:20:00',4),(47,539529,'2020-11-03 14:20:00',2),(48,541305,'2020-11-03 14:20:00',8),(49,550652,'2020-11-03 14:20:00',7);
+
+SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+INNER JOIN movies m ON s.idMovie_show = m.id_movie
+INNER JOIN rooms r ON s.idRoom_show = r.id_room
+INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+WHERE m.id_movie = 213
+ORDER BY s.datetime_show;
+
+SELECT SUM(p.ticketsQuantity_purchase) AS sold
+FROM purchases p
+WHERE p.idShow_purchase = 71;
+
+SELECT * from purchases;
+drop table tickets;
+drop table purchases;
+
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),20,0,12000);
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),15,0,9000);
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),80,0,48000);
+
+insert into tickets (idPurchase_ticket, ticketNumber_ticket, qr_ticket) values (1,20,'qr');
