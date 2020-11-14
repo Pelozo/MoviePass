@@ -7,7 +7,6 @@ use daos\MovieDaos as MovieDaos;
 use daos\RoomDaos as RoomDaos;
 use daos\PurchaseDaos as PurchaseDaos;
 use models\show as Show;
-use controllers\movieController as MovieController;
 
 
 class ShowController{
@@ -36,6 +35,7 @@ class ShowController{
         }
         try{
             $shows = $this->showDaos->getAll();
+            
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
@@ -61,8 +61,7 @@ class ShowController{
         }
 
 
-        if (isset($idMovie, $date, $idRoom, $idCinema)){
-      
+        if (isset($idMovie, $date, $idRoom, $idCinema)){      
             $err = null;
 
             if ($idMovie == null){
@@ -96,6 +95,7 @@ class ShowController{
                         require_once(VIEWS_PATH . "addShow.php");
                     }
                 }catch(\Exception $err){
+                    throw $err;
                     $err = DATABASE_ERR;
 
                     require_once(VIEWS_PATH . "addShow.php");
@@ -118,6 +118,7 @@ class ShowController{
             $years = array_column($this->movieDaos->getMoviesYear(),'year');
             $cinemas = $this->cinemaDaos->getAllWithRooms(); 
         } catch(\Exception $err){
+
             $err = DATABASE_ERR;
             require_once(VIEWS_PATH . "addShow.php");
         }
@@ -162,6 +163,7 @@ class ShowController{
                 }
                 
             }catch(\Exception $err){
+                throw $err;
                 $err = DATABASE_ERR;
 
                 require_once(VIEWS_PATH . "addShow.php");
@@ -172,7 +174,7 @@ class ShowController{
                 //get show, cinema and room from id
                 $show = $this->showDaos->getById($id);
                 $room = $show->getRoom();
-                $cinemaShow = $this->cinemaDaos->getById($room->getIdCinema());
+                $cinemaShow = $this->cinemaDaos->getById($room->getCinema()->getId());
                 $movie = $show->getMovie();
                 
                 $date = $show->getDatetime();
@@ -230,25 +232,14 @@ class ShowController{
 
     public function showDetails($id){
         try{
-            $shows = $this->showDaos->getByIdMovie($id);
-
-            $availableShows = array();
-            
-            //verify if theres available tickets in the room of the show
-            foreach($shows as $show){
-                $ticketsSold = $this->purchaseDaos->getSoldTicketsByShow($show->getId());
-                $roomCapacity = $show->getRoom()->getCapacity();
-                if(($roomCapacity - $ticketsSold) > 0){
-                    array_push($availableShows, $show);
-                }
-            }
+            $movie = $this->movieDaos->getById($id);
+            $availableShows = $this->showDaos->getByIdMovie($id);
 
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
         require_once(VIEWS_PATH . "selectedShow.php");
     } 
-
 
 }
 

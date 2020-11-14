@@ -22,7 +22,9 @@ class RoomController{
             $cinema = $this->cinemaDaos->getById($id);
             $rooms = $this->roomDaos->getByCinema($id);
         }catch(\Exception $err){
+            throw $err;
             $err = DATABASE_ERR;
+            
         }
 
         require_once(VIEWS_PATH . "roomTable.php");
@@ -90,7 +92,7 @@ class RoomController{
             //replace null id with id
             $room->setId($id);
             //add cinema id
-            $room->setIdCinema($idCinema);
+            $room->setCinema($idCinema);
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
@@ -107,24 +109,26 @@ class RoomController{
                 //back to index
                 $this->show($idCinema);
             }catch(\Exception $err){
+                throw $err;
                 $err = DATABASE_ERR;
                 require_once(VIEWS_PATH . "addRoom.php");
             }
         } else {
         
-        try{
-            //get room from id
-            $room = $this->roomDaos->getById($id);
-            //room not found
-            if(empty($room)){
-                $err = 'No se encontro la sala';
-            }
-        }catch(\Exception $err){
-            $err = DATABASE_ERR;
-            require_once(VIEWS_PATH . "addRoom.php");
+            try{
+                //get room from id
+                $room = $this->roomDaos->getById($id);
+                //room not found
+                if(empty($room)){
+                    $err = 'No se encontro la sala';
+                }
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "addRoom.php");
 
-        }
-        require_once(VIEWS_PATH . "addRoom.php");
+            }
+
+            require_once(VIEWS_PATH . "addRoom.php");
 
         }
     }
