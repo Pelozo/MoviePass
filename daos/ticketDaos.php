@@ -49,7 +49,8 @@ class TicketDaos extends BaseDaos{
         LEFT JOIN users u ON p.idUser_purchase = u.id_user
         LEFT JOIN shows s ON s.id_show = p.idShow_purchase
         WHERE u.id_user = :idUser
-        AND s.datetime_show > NOW()";
+        AND s.datetime_show > NOW()
+        ORDER BY s.datetime_show";
 
         $parameters['idUser'] = $idUser; 
         

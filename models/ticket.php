@@ -35,6 +35,7 @@ class Ticket implements \JsonSerializable{
 	public function setQr($qr){
 		$this->qr = $qr;
     }
+
     public function jsonSerialize(){
         return get_object_vars($this);
     }
@@ -42,7 +43,7 @@ class Ticket implements \JsonSerializable{
     private function generateQr(){
         $toEncode['ticketNumber'] = $this->ticket_number;
         $toEncode['purchaseId'] = $this->purchase->getId();
-        return QR_URL . json_encode($toEncode);
+        return QR_URL . urlencode(json_encode($toEncode));
     }
 }
 ?>
