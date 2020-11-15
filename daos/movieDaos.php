@@ -6,9 +6,11 @@ use models\movie as Movie;
 class MovieDaos extends BaseDaos{
 
     const TABLE_NAME = 'movies';
+    private $genreDaos;
 
     public function __construct(){
         parent::__construct(self::TABLE_NAME, 'Movie'); 
+        $this->genreDaos = GenreDaos::getInstance();
         set_time_limit(0);       
     }
 
@@ -20,8 +22,22 @@ class MovieDaos extends BaseDaos{
         return parent::_exists($id);
     }
 
+    //deberia traer array genres
     public function getById($id){
-        return parent::_getByProperty($id, 'id');
+        $query = 'SELECT * from ' . self::TABLE_NAME . ' where id_movie = :id_movie;';
+        try{
+            $params['id_movie'] = $id;
+            $this->connection = Connection::getInstance();
+            
+            $result = $this->connection->executeWithAssoc($query, $params)[0];
+            $genres = $this->genreDaos->getByMovie($id);
+            $movie = new Movie($id, $result['title_movie'], $result ['overview_movie'], $result['img_movie'], $result['language_movie'], $genres, $result['releaseDate_movie'], $result['duration_movie']);
+
+            return $movie;
+
+        } catch(\Exception $ex){
+            throw $ex;
+        }
     }
 
     public function add($movie){
