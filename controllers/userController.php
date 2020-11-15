@@ -5,6 +5,7 @@ use models\user as User;
 use models\userProfile as Profile;
 use daos\userDaos as UserDaos;
 use daos\userProfileDaos as UserProfileDaos;
+use daos\TicketDaos as TicketDaos;
 
 class UserController{
     private $daos;
@@ -15,6 +16,7 @@ class UserController{
         $this->daos = new UserDaos();
         $this->userProfileDaos = new UserProfileDaos();
         $this->movieController = new MovieController();
+        $this->ticketDaos = new TicketDaos();
     }
 
     public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
@@ -79,12 +81,21 @@ class UserController{
 
     public function index(){
         try{
-            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
+            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
+
         }catch(\Exception $err){
+            throw $err;
             $err = DATABASE_ERR;
         }
-
         require_once(VIEWS_PATH . "modifyProfile.php");
+
+        //insert tickets
+        $ticketController = new TicketController();
+        $ticketController->ticketByUser($_SESSION['user']->getId());
+
+
+
+        
     }
 
 

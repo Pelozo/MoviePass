@@ -12,10 +12,6 @@ class RoomDaos extends BaseDaos{
         parent::__construct(self::TABLE_NAME, 'Room');        
     }
 
-    public function getAll(){
-        return parent::_getAll();
-    }
-
     public function exists($id){
         return parent::_exists($id);
     }

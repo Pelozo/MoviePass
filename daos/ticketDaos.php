@@ -2,7 +2,8 @@
 namespace daos;
 use daos\baseDaos as BaseDaos;
 use models\ticket as Ticket;
-
+use models\Purchase as Purchase;
+use models\user as User;
 class TicketDaos extends BaseDaos{
     
     const TABLE_NAME = 'tickets';
@@ -40,6 +41,56 @@ class TicketDaos extends BaseDaos{
     public function remove($id){
         return parent::_remove($id, 'id');
     }
+
+
+    public function getByUser($idUser){
+        $query = "select t.*, p.*, u.*, s.* from tickets t
+        LEFT JOIN purchases p on t.idPurchase_ticket = p.id_purchase
+        LEFT JOIN users u ON p.idUser_purchase = u.id_user
+        LEFT JOIN shows s ON s.id_show = p.idShow_purchase
+        WHERE u.id_user = :idUser
+        AND s.datetime_show > NOW()";
+
+        $parameters['idUser'] = $idUser; 
+        
+
+        try{
+            $showDaos = new ShowDaos();
+            $connection = Connection::getInstance();
+            $resultSet = $connection->executeWithAssoc($query, $parameters);
+
+            $results = array();
+            foreach ($resultSet as $ticket){
+                $object = new Ticket(
+                                new Purchase(
+                                    new User(
+                                        $ticket['email_user'] ,
+                                        $ticket['password_user'],
+                                        $ticket['idRol_user']
+                                    ),
+                                    $showDaos->getById($ticket['idShow_purchase']),
+                                    $ticket['ticketsQuantity_purchase'],
+                                    $ticket['discount_purchase'],
+                                    $ticket['date_purchase']
+                                ),
+                                $ticket['ticketNumber_ticket']
+                            );
+                $object->getPurchase()->getUser()->setId($ticket['id_user']);
+
+                $results[] = $object;
+            }
+            return $results;
+        }
+        catch(\Exception $ex){
+            throw $ex;
+        }
+
+
+    }
+
+    
+
+
 
 }
 

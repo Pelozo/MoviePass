@@ -37,6 +37,7 @@ class PurchaseController{
                 require_once(VIEWS_PATH . "login.php");
             }
         }catch(\Exception $err){
+            throw $err;
             $err = DATABASE_ERR;
         }
     }
@@ -60,8 +61,11 @@ class PurchaseController{
 
             $purchase->setId($idPurchase);
             
-            $ticket = new Ticket($purchase, rand(), "qr");
-            $this->ticketDaos->add($ticket);
+            //generate tickets
+            for($i = 0; $i< $ticketsQuantity; $i++){
+                $ticket = new Ticket($purchase, rand());
+                $this->ticketDaos->add($ticket);
+            }
 
             $message = 'Compra realizada con exito!';
 
