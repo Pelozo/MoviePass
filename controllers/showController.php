@@ -231,8 +231,10 @@ class ShowController{
     public function showDetails($id){
         try{
             $shows = $this->showDaos->getByIdMovie($id);
+            $movie = $this->movieDaos->getById($id);
 
             $availableShows = array();
+            $notAvailableShows = array();
             
             //verify if theres available tickets in the room of the show
             foreach($shows as $show){
@@ -240,6 +242,8 @@ class ShowController{
                 $roomCapacity = $show->getRoom()->getCapacity();
                 if(($roomCapacity - $ticketsSold) > 0){
                     array_push($availableShows, $show);
+                }else{
+                    array_push($notAvailableShows, $show);
                 }
             }
 

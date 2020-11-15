@@ -3,8 +3,8 @@
     <div class="table-wrapper">
         <div class="table-title">
             <div class="row">
-                <div class="col-sm-8"><h1><?=$availableShows[0]->getMovie()->getTitle()?></h1></div>
-                <div class="col-sm-8"><img src="<?=$availableShows[0]->getMovie()->getImg()?>" style="margin:2em 0 2em 0" width="200px" height="300px"></img></div>
+                <div class="col-sm-8"><h1><?=$movie->getTitle()?></h1></div>
+                <div class="col-sm-8"><img src="<?=$movie->getImg()?>" style="margin:2em 0 2em 0" width="200px" height="300px"></img></div>
             </div>
         </div>
         <table id="showTable" class="table table-bordered">
@@ -24,10 +24,10 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><?=$availableShows[0]->getMovie()->getOverview()?></td>
-                    <td><?=$availableShows[0]->getMovie()->getLanguage()?></td>
+                    <td><?=$movie->getOverview()?></td>
+                    <td><?=$movie->getLanguage()?></td>
                     <?php 
-                        $genres = $availableShows[0]->getMovie()->getGenres();
+                        $genres = $movie->getGenres();
                         $names = array();
                         foreach($genres as $genre){
                             array_push($names, $genre->getName());
@@ -35,8 +35,8 @@
                         $genreString = implode(", ", $names);
                     ?>
                     <td><?=$genreString?></td>
-                    <td><?=$availableShows[0]->getMovie()->getReleaseDate()?></td>
-                    <td><?=$availableShows[0]->getMovie()->getDuration()?></td>
+                    <td><?=$movie->getReleaseDate()?></td>
+                    <td><?=$movie->getDuration()?></td>
                 </tr>  
             </tbody>
         </table>
@@ -68,6 +68,16 @@
                     <td><a href="<?=FRONT_ROOT?>purchase/purchaseDetails/<?=$show->getId()?>">
                     <button type="submit" class="btn btn-info add-new" style="width:340px"><i class="fa fa-plus"></i> Comprar</button>
                     </a></td>
+                </tr>
+                <?php }
+                foreach($notAvailableShows as $show){ ?>
+                <tr>
+                    <td><?=$show->getRoom()->getIdCinema()?></td>
+                    <td><?=$show->getRoom()->getName()?></td>
+                    <td><?=$show->getRoom()->getPrice()?></td>
+                    <td><?=$show->getRoom()->getCapacity()?></td>
+                    <td><?=$show->getDatetime()?></td>
+                    <td><button type="submit" class="btn btn-info add-new" style="width:340px;background-color:rebeccapurple;border-color:rebeccapurple" disabled><i class="fa fa-plus"></i> Agotado</button></td>
                 </tr>
                 <?php } ?>
             </tbody>
