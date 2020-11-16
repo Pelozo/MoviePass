@@ -140,13 +140,20 @@ class ShowController{
                 $err = null;
 
                 $result = $this->showDaos->verifyShowDay($show, $idCinema);
-                if(!empty($result)){
+                if(!empty($result)){                    
                     foreach($result as $res){
                         if($res['id_cinema'] != $idCinema){
                             $err = 'No se puede agregar la misma película un mismo día a distintos cines';
                         }
                     }
+                                    
+                    if(empty($this->showDaos->verifySameRoom($show, $idRoom))){
+                        $err = 'Nope';
+                    }
                 }
+
+
+
                         
                 $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 
@@ -229,6 +236,8 @@ class ShowController{
         }
         return true;
     }
+
+ 
 
     public function showDetails($id){
         try{

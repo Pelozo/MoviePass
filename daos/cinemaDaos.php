@@ -39,10 +39,11 @@ class CinemaDaos extends BaseDaos{
 
         $query = "SELECT * FROM ". self::TABLE_NAME ." c INNER JOIN rooms r ON c.id_cinema = r.idCinema_room GROUP BY c.id_cinema";        
 
-        $connection = Connection::getInstance();
+        
 
         $result = array();
         try{
+            $connection = Connection::getInstance();
             $cinemas = $connection->executeWithAssoc($query);
     
             foreach($cinemas as $cinema){
@@ -56,5 +57,7 @@ class CinemaDaos extends BaseDaos{
             throw $ex;
         }
     }
+
+
 }
 ?>

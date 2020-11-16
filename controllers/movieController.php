@@ -83,4 +83,14 @@ class MovieController{
 
     }
 
+    public function getAllAdded(){
+        try{
+            echo json_encode($this->movieDaos->getAllAdded());
+        }catch(\Exception $err){
+            echo '[]';
+        }
+    }
+
+
+
 }
