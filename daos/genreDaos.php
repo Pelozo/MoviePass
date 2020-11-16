@@ -38,7 +38,7 @@ class GenreDaos  extends BaseDaos{
     public function getByMovie($idMovie){
         $query ="SELECT g.id_genre,g.name_genre FROM movies_genres mg  INNER JOIN genres g ON g.id_genre = mg.id_genre
         WHERE id_movie = :id_movie";
-        $params = array();
+        
         $params['id_movie'] = $idMovie;
 
         $this->connection = Connection::getInstance();

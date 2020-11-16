@@ -27,7 +27,6 @@
                     <td><?=$movie->getOverview()?></td>
                     <td><?=$movie->getLanguage()?></td>
                     <?php 
-                    
                         $genres = $movie->getGenres();
                         $names = array();
                         foreach($genres as $genre){
@@ -38,6 +37,7 @@
                     <td><?=$genreString?></td>
                     <td><?=$movie->getReleaseDate()?></td>
                     <td><?=$movie->getDuration()?> minutos</td>
+
                 </tr>  
             </tbody>
         </table>
@@ -69,6 +69,16 @@
                     <td><a href="<?=FRONT_ROOT?>purchase/purchaseDetails/<?=$show->getId()?>">
                     <button type="submit" class="btn btn-info add-new" style="width:340px"><i class="fa fa-plus"></i> Comprar</button>
                     </a></td>
+                </tr>
+                <?php }
+                foreach($notAvailableShows as $show){ ?>
+                <tr>
+                    <td><?=$show->getRoom()->getIdCinema()?></td>
+                    <td><?=$show->getRoom()->getName()?></td>
+                    <td><?=$show->getRoom()->getPrice()?></td>
+                    <td><?=$show->getRoom()->getCapacity()?></td>
+                    <td><?=$show->getDatetime()?></td>
+                    <td><button type="submit" class="btn btn-info add-new" style="width:340px;background-color:rebeccapurple;border-color:rebeccapurple" disabled><i class="fa fa-plus"></i> Agotado</button></td>
                 </tr>
                 <?php } ?>
             </tbody>
