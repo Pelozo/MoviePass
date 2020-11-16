@@ -73,14 +73,20 @@ class ShowController{
                 try{
                     //create new show
                     $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
-                    $result = $this->showDaos->verifyShowDay($show, $idCinema);
+                    $result = $this->showDaos->verifyShowDay($show);
+                    
+                    //this function returns an !empty array if the show's movie is playing the same day
                     if(!empty($result)){
                         foreach($result as $res){
                             if($res['id_cinema'] != $idCinema){
-                                $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                                $err = 'No se puede agregar la misma película un mismo día a distintos cines.';
+                            }else{
+                                if($res['idRoom_show'] != $idRoom){
+                                    $err = 'No se puede agregar la misma película un mismo día en diferentes salas del mismo cine.';
+                                }
                             }
                         }
-                    }
+                    } 
 
                     $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                     $valid = $this->verify15Minutes($shows3Days, $show);
@@ -139,14 +145,20 @@ class ShowController{
 
                 $err = null;
 
-                $result = $this->showDaos->verifyShowDay($show, $idCinema);
+                $result = $this->showDaos->verifyShowDay($show);
+                
+                //this function returns an !empty array if the show's movie is playing the same day
                 if(!empty($result)){
                     foreach($result as $res){
                         if($res['id_cinema'] != $idCinema){
-                            $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                            $err = 'No se puede agregar la misma película un mismo día a distintos cines.';
+                        }else{
+                            if($res['idRoom_show'] != $idRoom){
+                                $err = 'No se puede agregar la misma película un mismo día en diferentes salas del mismo cine.';
+                            }
                         }
                     }
-                }
+                } 
                         
                 $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 

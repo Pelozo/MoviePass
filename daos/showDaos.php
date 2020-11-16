@@ -172,21 +172,20 @@ class ShowDaos extends BaseDaos{
         }
     }
 
-    public function verifyShowDay($show, $idCinema){
+    public function verifyShowDay($show){
         
-        $query = 'SELECT c.id_cinema, s.idMovie_show, s.datetime_show from ' . self::TABLE_NAME . ' s
+        $query = 'SELECT c.id_cinema, s.idMovie_show, s.datetime_show, s.idRoom_show from ' . self::TABLE_NAME . ' s
         INNER JOIN movies m ON m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON c.id_cinema = r.idCinema_room
-        WHERE DAY(s.datetime_show) = DAY(:datetime_show) AND s.idMovie_show = :id_movie AND r.idCinema_room != :id_cinema;';
+        WHERE DATE(s.datetime_show) = DATE(:datetime_show) AND s.idMovie_show = :id_movie'; //AND r.idCinema_room != :id_cinema AND s.idRoom_show = :id_room;
         
 
         $parameters['datetime_show'] = $show->getDatetime();
         $parameters['id_movie'] = $show->getMovie()->getId();
-        $parameters['id_cinema'] = $idCinema;
         
-        $connection = Connection::getInstance();
         try{
+            $connection = Connection::getInstance();
             $resultSet = $connection->execute($query,$parameters);
     
             return $resultSet;
@@ -194,6 +193,12 @@ class ShowDaos extends BaseDaos{
         catch(\Exception $ex){
             throw $ex;
         }
+    }
+    
+    public function verifyShowRoom($show, $idCinema){
+        $query = 'SELECT * from ' . self::TABLE_NAME . ' s
+        INNER JOIN movies m ON m.id_movie = s.idMovie_show
+        INNER JOIN rooms r ON s.idRoom_show = r.id_room';
     }
 
     public function verifyShowDatetimeOverlap($_show){
@@ -230,11 +235,11 @@ class ShowDaos extends BaseDaos{
                                     $show['price_room'],
                                     $show['capacity_room'],
                                     new Cinema(
-                                        $resultSet['name_cinema'],
-                                        $resultSet['address_cinema'],
-                                        $resultSet['city_cinema'],
-                                        $resultSet['zip_cinema'],
-                                        $resultSet['province_cinema']
+                                        $show['name_cinema'],
+                                        $show['address_cinema'],
+                                        $show['city_cinema'],
+                                        $show['zip_cinema'],
+                                        $show['province_cinema']
                                     )
                                 ),
                             $show['datetime_show']);
