@@ -83,7 +83,7 @@ create table purchases (id_purchase int auto_increment,
 create table tickets (id_ticket int auto_increment,
 					  idPurchase_ticket int not null,
                       ticketNumber_ticket int not null,
-                      qr_ticket varchar (100),
+                      qr_ticket varchar (200),
                       constraint pk_idTicket primary key (id_ticket),
                       constraint fk_idPurchaseTicket foreign key (idPurchase_ticket) references purchases (id_purchase)
 					  );
@@ -173,3 +173,9 @@ WHERE s.datetime_show > now()
 group by m.id_movie;
 
 INSERT INTO `shows` VALUES (29,337401,'2020-10-27 14:11:00',1),(30,337401,'2020-10-27 14:20:00',1),(31,337401,'2020-10-28 14:25:00',4),(32,4291,'2020-10-22 10:49:00',2),(33,78450,'2020-10-31 14:56:00',3),(34,213,'2020-10-29 14:20:00',5),(35,468,'2020-10-30 14:20:00',5),(36,4291,'2020-10-31 14:20:00',6),(37,86835,'2020-11-01 14:20:00',3),(38,340102,'2020-11-02 14:20:00',1),(39,11194,'2020-11-04 14:20:00',2),(40,11423,'2020-11-05 14:20:00',3),(41,446893,'2020-11-03 14:20:00',4),(42,446893,'2020-11-03 14:20:00',4),(43,669770,'2020-11-03 14:20:00',3),(44,669665,'2020-11-03 14:20:00',2),(45,678999,'2020-11-03 14:20:00',1),(46,684308,'2020-11-03 14:20:00',4),(47,539529,'2020-11-03 14:20:00',2),(48,541305,'2020-11-03 14:20:00',8),(49,550652,'2020-11-03 14:20:00',7);
+
+select * from purchases;
+select * from tickets;
+
+drop table tickets;
+
