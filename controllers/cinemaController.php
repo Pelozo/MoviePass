@@ -134,6 +134,23 @@ class CinemaController{
         $this->index();
     }
 
+    //this is used on ajax calls
+    public function getAllWithRooms(){
+        //check if user is logged and has admin privileges
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");           
+            return;
+        }
+        try{
+            echo json_encode($this->cinemaDaos->getAllWithRooms());
+        }catch(\Exception $err){
+            echo '[]';
+        }
+
+
+
+    }
+
 }
 
 

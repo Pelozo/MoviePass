@@ -11,6 +11,7 @@ class TicketController{
     }
 
 
+    //and this is where I'd put my "only usable from same package" access modifier IF I HAD ONE.
     public function ticketByUser($idUser){
 
         //check if user is logged and has privileges
@@ -20,11 +21,8 @@ class TicketController{
         }
 
 
-        $tickets = $this->ticketDaos->getByUser($_SESSION['user']->getId());
+        return $tickets = $this->ticketDaos->getByUser($_SESSION['user']->getId());
 
-        if(isset($tickets) && sizeof($tickets) > 0){
-            require_once(VIEWS_PATH . "ticketTable.php");
-        }
     }
 
 

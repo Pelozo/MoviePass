@@ -2,7 +2,7 @@
 namespace models;
 
 
-class Show{
+class Show implements \JsonSerializable{
     private $id;
     private $movie;
     private $room;
@@ -45,6 +45,10 @@ class Show{
 
     public function setDatetime($datetime){
         $this->datetime = $datetime;
+    }
+
+    public function jsonSerialize(){
+        return get_object_vars($this);
     }
 }
 

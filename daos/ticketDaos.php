@@ -64,11 +64,7 @@ class TicketDaos extends BaseDaos{
             foreach ($resultSet as $ticket){
                 $object = new Ticket(
                                 new Purchase(
-                                    new User(
-                                        $ticket['email_user'] ,
-                                        $ticket['password_user'],
-                                        $ticket['idRol_user']
-                                    ),
+                                    null,
                                     $showDaos->getById($ticket['idShow_purchase']),
                                     $ticket['ticketsQuantity_purchase'],
                                     $ticket['discount_purchase'],
@@ -76,7 +72,8 @@ class TicketDaos extends BaseDaos{
                                 ),
                                 $ticket['ticketNumber_ticket']
                             );
-                $object->getPurchase()->getUser()->setId($ticket['id_user']);
+                $object->getPurchase()->setId($ticket['id_purchase']);
+                //$object->getPurchase()->getUser()->setId($ticket['id_user']);
 
                 $results[] = $object;
             }
