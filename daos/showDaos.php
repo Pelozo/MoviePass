@@ -172,22 +172,22 @@ class ShowDaos extends BaseDaos{
         }
     }
 
-    public function verifyShowDay($show, $idCinema){
+    public function verifyShowDay($show){
         
-        $query = 'SELECT c.id_cinema, s.idMovie_show, s.datetime_show from ' . self::TABLE_NAME . ' s
+        $query = 'SELECT c.id_cinema, s.idMovie_show, s.datetime_show, s.idRoom_show from ' . self::TABLE_NAME . ' s
         INNER JOIN movies m ON m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON c.id_cinema = r.idCinema_room
-        WHERE DATE(s.datetime_show) = DATE(:datetime_show) AND s.idMovie_show = :id_movie AND r.idCinema_room != :id_cinema;';
-        
+
+        WHERE DATE(s.datetime_show) = DATE(:datetime_show) AND s.idMovie_show = :id_movie'; //AND r.idCinema_room != :id_cinema AND s.idRoom_show = :id_room;
+
 
         $parameters['datetime_show'] = $show->getDatetime();
         $parameters['id_movie'] = $show->getMovie()->getId();
-        $parameters['id_cinema'] = $idCinema;
         
-        
+
         try{
-            $connection = Connection::getInstance(); 
+            $connection = Connection::getInstance();
             $resultSet = $connection->execute($query,$parameters);
     
             return $resultSet;
@@ -195,6 +195,12 @@ class ShowDaos extends BaseDaos{
         catch(\Exception $ex){
             throw $ex;
         }
+    }
+    
+    public function verifyShowRoom($show, $idCinema){
+        $query = 'SELECT * from ' . self::TABLE_NAME . ' s
+        INNER JOIN movies m ON m.id_movie = s.idMovie_show
+        INNER JOIN rooms r ON s.idRoom_show = r.id_room';
     }
 
     
