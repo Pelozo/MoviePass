@@ -167,14 +167,9 @@ class MovieDaos extends BaseDaos{
 
         $results = array();
         foreach($movies as $movie){
-
             $movie = $this->constructMovie($movie);
-
-
             array_push($results, $movie);
         }
-
-
         return $results;
         
 
@@ -321,6 +316,41 @@ class MovieDaos extends BaseDaos{
             throw $ex;
         }
 
+    }
+
+    public function getAllAdded(){
+
+        $query = "SELECT m.* FROM movies m
+        INNER JOIN shows s ON s.idMovie_show = m.id_movie
+        WHERE s.idMovie_show = m.id_movie
+        GROUP BY m.id_movie";        
+       
+
+        $result = array();
+        try{
+            $connection = Connection::getInstance();
+            $movies = $connection->executeWithAssoc($query);
+    
+            foreach($movies as $movieArray){
+                //get genres
+                $genreDaos = GenreDaos::getInstance();
+                $movie = new Movie($movieArray['id_movie'], 
+                                    $movieArray['title_movie'],
+                                    $movieArray['overview_movie'],
+                                    $movieArray['img_movie'],
+                                    $movieArray['language_movie'],
+                                    $genreDaos->getByMovie($movieArray['id_movie']),
+                                    $movieArray['releaseDate_movie'],
+                                    $movieArray['duration_movie']
+                                );
+                
+                array_push($result, $movie);
+            }
+            return $this->constructMovies($result);
+
+        }catch(\Exception $ex){
+            throw $ex;
+        }
     }
 
 }

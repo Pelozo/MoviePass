@@ -69,15 +69,7 @@ class PurchaseDaos extends BaseDaos{
 
 
     public function getSoldTickets($idMovie = null, $idCinema = null, $idRoom = null){
-        /*
-        $query = "SELECT SUM(p.ticketsQuantity_purchase) AS sold, SUM(r.capacity_room) - SUM(p.ticketsQuantity_purchase) AS NotSold FROM purchases p
-        INNER JOIN shows s ON p.idShow_purchase = s.id_show
-        INNER JOIN movies m ON s.idMovie_show = m.id_movie
-        INNER JOIN rooms r ON s.idRoom_show = r.id_room
-        INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
-        WHERE m.id_movie = " . (($idMovie)? ":id_movie" : "m.id_movie") .
-        " AND c.id_cinema = " . (($idCinema)? ":id_cinema" : "c.id_cinema") .
-        " AND r.id_room = " . (($idRoom)? ":id_room" : "r.id_room");*/
+
 
         $query = "SELECT 
                         m.title_movie, 
@@ -99,36 +91,48 @@ class PurchaseDaos extends BaseDaos{
                         " AND c.id_cinema = " . (($idCinema)? ":id_cinema" : "c.id_cinema") .
                         " AND r.id_room = " . (($idRoom)? ":id_room" : "r.id_room");
 
-        /*
-        echo "<pre>";
-        echo $query;
-        echo "</pre>";
-
-
-        echo "asd: $idMovie, $idCinema, $idRoom";
-        */
 
         $params = array();
 
         if($idMovie) $params['id_movie'] = $idMovie;
-
         if($idCinema) $params['id_cinema'] = $idCinema;
-
         if($idRoom) $params['id_room'] = $idRoom;
-
-        //echo $query;
-
 
         try{
             $connection = Connection::getInstance();
             return $resultSet = $connection->executeWithAssoc($query, $params)[0];
-            
-            
-            echo "<pre>";
-            var_dump($resultSet);
-            echo "</pre>";
-            
+  
 
+
+        }catch(\Exception $ex){
+            throw $ex;
+            
+        }
+
+    }
+
+    public function getEarnings($idMovie, $idCinema, $startTime, $endTime){
+
+        $query = "SELECT IFNULL(SUM(total_purchase),0) AS sold FROM purchases p
+        INNER JOIN shows s ON p.idShow_purchase = s.id_show
+        INNER JOIN movies m ON s.idMovie_show = m.id_movie
+        INNER JOIN rooms r ON s.idRoom_show = r.id_room
+        INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        WHERE m.id_movie = " . (($idMovie)? ":id_movie" : "m.id_movie") . 
+        " AND c.id_cinema = " . (($idCinema)? ":id_cinema" : "c.id_cinema"). 
+        " AND s.dateTime_show BETWEEN " . (($startTime)? ":startTime" : "s.dateTime_show")  .  " AND " . (($endTime)? ":endTime" : "s.dateTime_show") . "";
+
+
+        $params = array();
+
+        if($idMovie) $params['id_movie'] = $idMovie;
+        if($idCinema) $params['id_cinema'] = $idCinema;
+        if($startTime) $params['startTime'] = $startTime;
+        if($endTime) $params['endTime'] = $endTime;
+
+        try{
+            $connection = Connection::getInstance();
+            return $resultSet = $connection->executeWithAssoc($query, $params)[0];
 
         }catch(\Exception $ex){
             throw $ex;

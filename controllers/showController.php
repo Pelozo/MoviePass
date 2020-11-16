@@ -145,10 +145,12 @@ class ShowController{
 
                 $err = null;
 
+
                 $result = $this->showDaos->verifyShowDay($show);
                 
                 //this function returns an !empty array if the show's movie is playing the same day
                 if(!empty($result)){
+
                     foreach($result as $res){
                         if($res['id_cinema'] != $idCinema){
                             $err = 'No se puede agregar la misma película un mismo día a distintos cines.';
@@ -158,8 +160,9 @@ class ShowController{
                             }
                         }
                     }
+
                 } 
-                        
+    
                 $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 
                 $valid = $this->verify15Minutes($shows3Days, $show);
@@ -241,6 +244,8 @@ class ShowController{
         }
         return true;
     }
+
+ 
 
     public function showDetails($id){
         try{

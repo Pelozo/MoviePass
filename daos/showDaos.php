@@ -178,12 +178,14 @@ class ShowDaos extends BaseDaos{
         INNER JOIN movies m ON m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON c.id_cinema = r.idCinema_room
+
         WHERE DATE(s.datetime_show) = DATE(:datetime_show) AND s.idMovie_show = :id_movie'; //AND r.idCinema_room != :id_cinema AND s.idRoom_show = :id_room;
-        
+
 
         $parameters['datetime_show'] = $show->getDatetime();
         $parameters['id_movie'] = $show->getMovie()->getId();
         
+
         try{
             $connection = Connection::getInstance();
             $resultSet = $connection->execute($query,$parameters);
@@ -199,6 +201,30 @@ class ShowDaos extends BaseDaos{
         $query = 'SELECT * from ' . self::TABLE_NAME . ' s
         INNER JOIN movies m ON m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room';
+    }
+
+    
+    public function verifySameRoom($show, $idRoom){
+
+        $query = "SELECT * FROM shows s
+        WHERE idRoom_show = :idRoom";
+
+        $params['idRoom'] = $idRoom;
+        //$params['datetime_show'] = $show->getDatetime();
+
+        try{
+            $connection = Connection::getInstance(); 
+            $resultSet = $connection->execute($query,$params);
+            echo "<pre>" ;
+            var_dump($resultSet);
+            echo "</pre>" ;
+            return $resultSet;
+        }
+        catch(\Exception $ex){
+            throw $ex;
+        }
+
+
     }
 
     public function verifyShowDatetimeOverlap($_show){
@@ -299,5 +325,7 @@ class ShowDaos extends BaseDaos{
 
         return $results;
     }
+
+
 }
 ?>

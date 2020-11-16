@@ -75,7 +75,7 @@ class PurchaseController{
         }
     }
 
-    public function getStats($idMovie = "all", $idCinema = "all", $idRoom = "all", $startTime = null, $endTIme = null){
+    public function getStats($idMovie = "all", $idCinema = "all", $idRoom = "all"){
         if($idMovie == "all") $idMovie = null;
         if($idCinema == "all") $idCinema = null;
         if($idRoom == "all") $idRoom = null;
@@ -84,14 +84,41 @@ class PurchaseController{
 
         $stats = $this->purchaseDaos->getSoldTickets($idMovie, $idCinema, $idRoom);
 
-        echo json_encode($stats);
-        
+        echo json_encode($stats);      
 
 
     }
 
+    public function getStatsTotal($idMovie = "all", $idCinema = "all",  $dates = "all"){
+        if($idMovie == "all") $idMovie = null;
+        if($idCinema == "all") $idCinema = null;
+        if($dates == "all"){
+            $startDate = null;
+            $endDate = null;
+        }else{
+            $startDate = explode("a", $dates)[0];
+            $endDate = explode("a", $dates)[1];
+        }
+
+        $stats = $this->purchaseDaos->getEarnings($idMovie, $idCinema, $startDate, $endDate);
+
+        echo json_encode($stats);      
+
+
+    }
+
+
+
     public function stats(){
         require_once(VIEWS_PATH . "stats.php");
+    }
+
+    public function statsTickets(){
+        require_once(VIEWS_PATH . "statsTickets.php");
+    }
+
+    public function statsTotal(){
+        require_once(VIEWS_PATH . "statsTotal.php");
     }
 }
 
