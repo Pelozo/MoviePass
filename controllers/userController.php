@@ -87,15 +87,13 @@ class UserController{
             throw $err;
             $err = DATABASE_ERR;
         }
-        require_once(VIEWS_PATH . "modifyProfile.php");
+
 
         //insert tickets
         $ticketController = new TicketController();
-        $ticketController->ticketByUser($_SESSION['user']->getId());
+        $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
 
-
-
-        
+        require_once(VIEWS_PATH . "profile.php");       
     }
 
 

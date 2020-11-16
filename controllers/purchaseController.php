@@ -74,6 +74,12 @@ class PurchaseController{
             require_once(VIEWS_PATH . "purchaseForm.php");
         }
     }
+
+    public function stats(){
+
+
+        require_once(VIEWS_PATH . "stats.php");
+    }
 }
 
 ?>
