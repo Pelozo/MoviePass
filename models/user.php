@@ -1,7 +1,7 @@
 <?php
 namespace models;
 
-class User{
+class User implements \JsonSerializable{
 	private $id;
     private $email;
     private $password;    
@@ -45,6 +45,10 @@ class User{
 	public function setIdRol($idRol){
 		$this->idRol = $idRol;
 	}
+
+	public function jsonSerialize(){
+        return get_object_vars($this);
+    }
 }
 
 

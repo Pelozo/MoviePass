@@ -178,3 +178,4 @@ select * from purchases;
 select * from tickets;
 
 drop table tickets;
+

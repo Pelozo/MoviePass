@@ -74,6 +74,25 @@ class PurchaseController{
             require_once(VIEWS_PATH . "purchaseForm.php");
         }
     }
+
+    public function getStats($idMovie = "all", $idCinema = "all", $idRoom = "all", $startTime = null, $endTIme = null){
+        if($idMovie == "all") $idMovie = null;
+        if($idCinema == "all") $idCinema = null;
+        if($idRoom == "all") $idRoom = null;
+
+
+
+        $stats = $this->purchaseDaos->getSoldTickets($idMovie, $idCinema, $idRoom);
+
+        echo json_encode($stats);
+        
+
+
+    }
+
+    public function stats(){
+        require_once(VIEWS_PATH . "stats.php");
+    }
 }
 
 ?>

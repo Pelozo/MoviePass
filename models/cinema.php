@@ -3,7 +3,7 @@ namespace models;
 
 
 
-class Cinema{
+class Cinema implements \JsonSerializable{
     private $id;
     private $name;
     private $address;
@@ -65,6 +65,10 @@ class Cinema{
 
     public function setProvince($province){
         $this->province = $province;
+    }
+
+    public function jsonSerialize(){
+        return get_object_vars($this);
     }
 
 }
