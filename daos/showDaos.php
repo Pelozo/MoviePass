@@ -4,6 +4,7 @@ use daos\baseDaos as BaseDaos;
 use models\show as Show;
 use models\movie as Movie;
 use models\room as Room;
+use models\cinema as Cinema;
 
 class ShowDaos extends BaseDaos{
 
@@ -19,17 +20,17 @@ class ShowDaos extends BaseDaos{
     public function getAll(){
         //var_dump(parent::_getAll());
 
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
         ORDER BY s.datetime_show";
 
-        $connection = Connection::getInstance();
+        
         try{
+            $connection = Connection::getInstance();
             $resultSet = $connection->executeWithAssoc($query);
-    
-    
+
             $results = array();
     
             foreach ($resultSet as $show){
@@ -47,15 +48,24 @@ class ShowDaos extends BaseDaos{
                                         $show['name_room'],
                                         $show['price_room'],
                                         $show['capacity_room'],
-                                        $show['idCinema_room']
+                                        new Cinema(
+                                            $show['name_cinema'],
+                                            $show['address_cinema'],
+                                            $show['city_cinema'],
+                                            $show['zip_cinema'],
+                                            $show['province_cinema']
+                                        )
                                     ),
                                     $show['datetime_show']
                                 );
                 $object->getRoom()->setId($show['id_room']);
+                $object->getRoom()->getCinema()->setId($show['id_cinema']);
                 $object->setId($show['id_show']);
-                $results['shows'][] = $object;
+
+                $results[] = $object;
+
     
-                $results['cinemas'][] = $show['name_cinema'];
+                
             }
     
             return $results;
@@ -71,15 +81,16 @@ class ShowDaos extends BaseDaos{
     }
 
     public function getById($id){
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
         WHERE s.id_show = :id_show";
 
-        $connection = Connection::getInstance();
+        
         $parameters['id_show'] = $id; 
         try{
+            $connection = Connection::getInstance();
             $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
     
             $object = new show(
@@ -96,11 +107,18 @@ class ShowDaos extends BaseDaos{
                                     $resultSet['name_room'],
                                     $resultSet['price_room'],
                                     $resultSet['capacity_room'],
-                                    $resultSet['idCinema_room']
+                                    new Cinema(
+                                        $resultSet['name_cinema'],
+                                        $resultSet['address_cinema'],
+                                        $resultSet['city_cinema'],
+                                        $resultSet['zip_cinema'],
+                                        $resultSet['province_cinema']
+                                    )
                                 ),
                                 $resultSet['datetime_show']
                             );
             $object->getRoom()->setId($resultSet['id_room']);
+            $object->getRoom()->getCinema()->setId($resultSet['id_cinema']);
             $object->setId($resultSet['id_show']);
     
             return $object;
@@ -119,8 +137,9 @@ class ShowDaos extends BaseDaos{
         $params['idRoom_show'] = $show->getRoom()->getId();
         $params['datetime_show'] = $show->getDatetime();
 
-        $this->connection = Connection::getInstance();
+        
         try{
+            $this->connection = Connection::getInstance();
             return $this->connection->executeNonQuery($query, $params);
         }
         catch(\Exception $ex){
@@ -178,9 +197,10 @@ class ShowDaos extends BaseDaos{
     }
 
     public function verifyShowDatetimeOverlap($_show){
-        $query = "SELECT s.*, m.*, r.* FROM shows s
+        $query = "SELECT s.*, m.*, r.*, c.* FROM shows s
         inner join movies m on m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
+        INNER JOIN cinemas c ON c.id_cinema = r.idCinema_room
         WHERE (DATE(s.datetime_show) = DATE(DATE_SUB(:datetime_show, INTERVAL 1 DAY))
         OR DATE(s.datetime_show) = DATE(:datetime_show)
         OR DATE(s.datetime_show) = DATE(DATE_ADD(:datetime_show, INTERVAL 1 DAY)))
@@ -209,17 +229,25 @@ class ShowDaos extends BaseDaos{
                                     $show['id_room'],
                                     $show['price_room'],
                                     $show['capacity_room'],
-                                    $show['idCinema_room']),
+                                    new Cinema(
+                                        $resultSet['name_cinema'],
+                                        $resultSet['address_cinema'],
+                                        $resultSet['city_cinema'],
+                                        $resultSet['zip_cinema'],
+                                        $resultSet['province_cinema']
+                                    )
+                                ),
                             $show['datetime_show']);
 
             $object->setId($show['id_show']);
+            $object->getRoom()->getCinema()->setId($show['id_cinema']);
             $results[] = $object;
         }
         return $results;
     }
 
     public function getByIdMovie($id){
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
@@ -248,11 +276,18 @@ class ShowDaos extends BaseDaos{
                                     $show['name_room'],
                                     $show['price_room'],
                                     $show['capacity_room'],
-                                    $show['idCinema_room']
+                                    new Cinema(
+                                        $show['name_cinema'],
+                                        $show['address_cinema'],
+                                        $show['city_cinema'],
+                                        $show['zip_cinema'],
+                                        $show['province_cinema']
+                                    )
                                 ),
                                 $show['datetime_show']
                             );
             $object->getRoom()->setId($show['id_room']);
+            $object->getRoom()->getCinema()->setId($show['id_cinema']);
             $object->setId($show['id_show']);
             $results[] = $object;
         }

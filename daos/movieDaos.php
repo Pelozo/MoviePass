@@ -24,18 +24,32 @@ class MovieDaos extends BaseDaos{
 
     //deberia traer array genres
     public function getById($id){
-        $query = 'SELECT * from ' . self::TABLE_NAME . ' where id_movie = :id_movie;';
+        $query = 'SELECT * from movies m
+        WHERE m.id_movie = :id_movie;';
+
+        $params['id_movie'] = $id;
+        
         try{
-            $params['id_movie'] = $id;
             $this->connection = Connection::getInstance();
-            
-            $result = $this->connection->executeWithAssoc($query, $params)[0];
-            $genres = $this->genreDaos->getByMovie($id);
-            $movie = new Movie($id, $result['title_movie'], $result ['overview_movie'], $result['img_movie'], $result['language_movie'], $genres, $result['releaseDate_movie'], $result['duration_movie']);
+            $resultSet = $this->connection->executeWithAssoc($query, $params)[0];
 
-            return $movie;
+            //get genres
+            $genreDaos = GenreDaos::getInstance();
+            $movie = new Movie($resultSet['id_movie'], 
+                                $resultSet['title_movie'],
+                                $resultSet['overview_movie'],
+                                $resultSet['img_movie'],
+                                $resultSet['language_movie'],
+                                $genreDaos->getByMovie($resultSet['id_movie']),
+                                $resultSet['releaseDate_movie'],
+                                $resultSet['duration_movie']
+                            );
+                
 
-        } catch(\Exception $ex){
+
+            return $this->constructMovie($movie);
+        }
+        catch(\Exception $ex){
             throw $ex;
         }
     }
@@ -51,8 +65,8 @@ class MovieDaos extends BaseDaos{
         $params['releaseDate_movie'] = $movie->getReleaseDate();
         $params['duration_movie'] = $movie->getDuration();
 
-        $this->connection = Connection::getInstance();
-        try{
+        try{            
+            $this->connection = Connection::getInstance();
             return $this->connection->executeNonQuery($query, $params);
         }
         catch(\Exception $ex){
@@ -106,8 +120,9 @@ class MovieDaos extends BaseDaos{
 
   
 
-        $this->connection = Connection::getInstance();
+
         try{
+            $this->connection = Connection::getInstance();
             $moviesArray = $this->connection->executeWithAssoc($query, $params);
             $movies = array();
             foreach($moviesArray as $movieArray){
@@ -230,9 +245,9 @@ class MovieDaos extends BaseDaos{
         INNER JOIN shows s ON s.idMovie_show = m.id_movie
         WHERE s.datetime_show > now()
         GROUP BY m.id_movie;';
-
-        $this->connection = Connection::getInstance();
+        
         try{
+            $this->connection = Connection::getInstance();
             $resultSet = $this->connection->execute($query);
             $movies = array();
             foreach($resultSet as $movieArray){

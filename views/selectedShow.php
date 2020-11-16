@@ -36,7 +36,8 @@
                     ?>
                     <td><?=$genreString?></td>
                     <td><?=$movie->getReleaseDate()?></td>
-                    <td><?=$movie->getDuration()?></td>
+                    <td><?=$movie->getDuration()?> minutos</td>
+
                 </tr>  
             </tbody>
         </table>
@@ -60,7 +61,7 @@
             <tbody>
                 <?php foreach($availableShows as $show){ ?>
                 <tr>
-                    <td><?=$show->getRoom()->getIdCinema()?></td>
+                    <td><?=$show->getRoom()->getCinema()->getName()?></td>
                     <td><?=$show->getRoom()->getName()?></td>
                     <td><?=$show->getRoom()->getPrice()?></td>
                     <td><?=$show->getRoom()->getCapacity()?></td>

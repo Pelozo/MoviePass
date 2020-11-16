@@ -66,6 +66,7 @@ class PurchaseDaos extends BaseDaos{
         //como soluciono esto??
         return $resultSet['sold'];
     }
+
 }
 
 ?>

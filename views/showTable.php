@@ -30,12 +30,12 @@
             <tbody>
 
                 <?php
-                foreach($shows['shows'] as $index=>$show){?>
+                foreach($shows as $show){?>
                 <tr>
                     <td><?=$show->getDatetime()?></td>
                     <td><?=$show->getMovie()->getTitle()?></td>
                     <td><?=$show->getRoom()->getName()?></td>
-                    <td><?=$shows['cinemas'][$index]?></td>
+                    <td><?=$show->getRoom()->getCinema()->getName()?></td>
                     
                     <td>
                         <form action="<?=FRONT_ROOT?>show/modify/" method='post'>

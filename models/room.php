@@ -8,13 +8,13 @@ class Room implements \JsonSerializable{
     private $name;
     private $price;
     private $capacity;
-    private $idCinema;
+    private $cinema;
 
-    public function __construct($name = '', $price= -1, $capacity= -1, $idCinema = -1){
+    public function __construct($name = '', $price= -1, $capacity= -1, $cinema = null){
         $this->name = $name;
         $this->price = $price;
         $this->capacity = $capacity;
-        $this->idCinema = $idCinema;
+        $this->cinema = $cinema;
     }
 
     public function getId(){
@@ -49,12 +49,12 @@ class Room implements \JsonSerializable{
 		$this->capacity = $capacity;
 	}
 
-	public function getIdCinema(){
-		return $this->idCinema;
+	public function getCinema(){
+		return $this->cinema;
 	}
 
-	public function setIdCinema($idCinema){
-		$this->idCinema = $idCinema;
+	public function setCinema($cinema){
+		$this->cinema = $cinema;
 	}
 
 	public function jsonSerialize(){
