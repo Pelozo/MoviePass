@@ -81,7 +81,7 @@ xmlhttp.onreadystatechange=function() {
 
         console.log(stats);
 
-        $("#stats").append('<p class="card-text">Vendido: $ ' + stats['sold'] + '.</p>');
+        $("#stats").append('<p class="card-text">Vendido: $' + stats['sold'] + '.</p>');
 
 
 

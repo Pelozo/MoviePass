@@ -46,12 +46,13 @@
                 <input name="idShow" type="hidden" value="<?=$show->getId()?>">
                 <div class="form-group">
                     <label>Seleccione cantidad de Entradas</label>
-                    <select name="ticketsQuantity" id="tickets">
+                    <select name="ticketsQuantity" id="tickets" onchange="updateTotal()">
                     <?php
                         for($i = 1; $i <= $availableCapacity; $i++){ ?>
                             <option value="<?=$i?>"><?=$i?></option>
                     <?php } ?>
                     </select>
+     
                 </div>
                 <div class="form-group">
                     <label>Nro. de Tarjeta</label>
@@ -74,6 +75,10 @@
                     <input class="form-control" name="discount" type="text" size="20">                        
                 </div>
                 <div class="form-group">
+                    <label>Total</label>
+                    <input class="form-control" name="total" id="total" type="text" size="20" disabled>                        
+                </div>
+                <div class="form-group">
                     <div class="row">
                        <input class="btn btn-primary" type="submit"  value="Comprar" style="font-weight: bold">
                     </div>
@@ -88,5 +93,17 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>
     </div> 
-</div> 
+</div>
+
+<script>
+$(document).ready(function(){
+    updateTotal();
+});
+
+function updateTotal(){
+    var tickets = document.getElementById("tickets").value;
+  $("#total").val("$" + tickets * <?=$show->getRoom()->getPrice();?>);
+}
+
+</script>
 <?php include(VIEWS_PATH."footer.php"); ?>
