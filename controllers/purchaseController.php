@@ -54,7 +54,7 @@ class PurchaseController{
         }
 
 
-        require_once(VIEWS_PATH . "purchaseFormTest.php");
+        require_once(VIEWS_PATH . "purchaseForm.php");
     }
 
     public function makePurchase($idShow, $ticketsQuantity = null, $cardNumber = null, $cardCode = null, $cardExp = null, $cardName = null, $cardDni = null, $discount = null){
@@ -110,7 +110,7 @@ class PurchaseController{
             }
             
         }
-        require_once(VIEWS_PATH . "purchaseFormTest.php");
+        require_once(VIEWS_PATH . "purchaseForm.php");
         
     }
 
