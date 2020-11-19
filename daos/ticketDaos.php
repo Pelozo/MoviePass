@@ -33,8 +33,12 @@ class TicketDaos extends BaseDaos{
         $params['ticketNumber_ticket'] = $ticket->getTicket_number();
         $params['qr_ticket'] = $ticket->getQr();
 
-        $this->connection = Connection::getInstance();
-        return $this->connection->executeNonQuery($query, $params);
+        try{
+            $this->connection = Connection::getInstance();
+            return $this->connection->executeNonQuery($query, $params);
+        }catch(\Exception $ex){
+            throw $ex;
+        }
 
     }
 
@@ -52,8 +56,7 @@ class TicketDaos extends BaseDaos{
         AND s.datetime_show > NOW()
         ORDER BY s.datetime_show";
 
-        $parameters['idUser'] = $idUser; 
-        
+        $parameters['idUser'] = $idUser;
 
         try{
             $showDaos = new ShowDaos();

@@ -28,7 +28,6 @@ class RoomDaos extends BaseDaos{
             $connection = Connection::getInstance();
             $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
 
-
             $object = new Room(                                
                             $resultSet['name_room'],
                             $resultSet['price_room'], 
@@ -111,21 +110,21 @@ class RoomDaos extends BaseDaos{
     }
 
     public function modify($room){
-        try{
-            $query = "UPDATE " . self::TABLE_NAME . " SET name_room = :name_room,
-            price_room = :price_room,
-            capacity_room = :capacity_room
-            WHERE id_room = :id_room";
-    
-            $parameters['name_room'] = $room->getName();
-            $parameters['price_room'] = $room->getPrice();
-            $parameters['capacity_room'] = $room->getCapacity();
-            $parameters['id_room'] = $room->getId();
+        $query = "UPDATE " . self::TABLE_NAME . " SET name_room = :name_room,
+        price_room = :price_room,
+        capacity_room = :capacity_room
+        WHERE id_room = :id_room";
 
+        $parameters['name_room'] = $room->getName();
+        $parameters['price_room'] = $room->getPrice();
+        $parameters['capacity_room'] = $room->getCapacity();
+        $parameters['id_room'] = $room->getId();
+
+        try{
             $this->connection = Connection::getInstance();
             $this->connection->ExecuteNonQuery($query, $parameters);
 
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             throw $e;
         }
     }

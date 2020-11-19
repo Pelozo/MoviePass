@@ -58,6 +58,7 @@ class ShowController{
         }catch(\Exception $err){
             $err = DATABASE_ERR;
             require_once(VIEWS_PATH . "addShow.php");
+            return;
         }
 
 
@@ -72,7 +73,8 @@ class ShowController{
             } else {
                 try{
                     //create new show
-                    $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
+                    $movie = $this->movieDaos->getById($idMovie);
+                    $show = new Show($movie, $this->roomDaos->getById($idRoom), $date);
                     $result = $this->showDaos->verifyShowDay($show);
                     
                     //this function returns an !empty array if the show's movie is playing the same day
@@ -160,8 +162,7 @@ class ShowController{
                             }
                         }
                     }
-
-                } 
+                }                
     
                 $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 
@@ -170,6 +171,7 @@ class ShowController{
                 if(!$valid){
                     $err = 'Ya hay una funcion a esa hora.';
                 }
+
                 if($err == null){
                     $this->showDaos->modify($show);
                     $this->index();
@@ -178,7 +180,6 @@ class ShowController{
                 }
                 
             }catch(\Exception $err){
-                throw $err;
                 $err = DATABASE_ERR;
 
                 require_once(VIEWS_PATH . "addShow.php");
@@ -248,11 +249,20 @@ class ShowController{
  
 
     public function showDetails($id){
+
+        //verify movie exists and has shows
         try{
+            $shows = $this->showDaos->getByIdMovieFuture($id);
+            if(sizeof($shows)<=0) throw new \Exception;
+        }catch(\Exception $ex){
+            throw $ex;
+            $homeController = new HomeController();
+            $homeController->index();
+            return;
+        }
 
-
-            $shows = $this->showDaos->getByIdMovie($id);
-            $movie = $this->movieDaos->getById($id);
+        try{
+            $movie = $shows[0]->getMovie();
 
             $availableShows = array();
             $notAvailableShows = array();
@@ -270,6 +280,7 @@ class ShowController{
 
         }catch(\Exception $err){
             $err = DATABASE_ERR;
+            
         }
         require_once(VIEWS_PATH . "selectedShow.php");
     } 

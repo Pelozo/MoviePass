@@ -40,13 +40,15 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>	
 		<div class="col-sm-6 bg-light boxStyle">
-			<form name="theform" action="<?=FRONT_ROOT?>purchase/makePurchase" method="POST">
+            <form name="theform" action="<?=FRONT_ROOT?>purchase/makePurchase" method="POST">
+            <?php if(!isset($purchase)){ ?>
+
                 <h2>Finalizar Compra</h2>
-                <?php if(!isset($purchase)){ ?>
+                
                 <input name="idShow" type="hidden" value="<?=$show->getId()?>">
                 <div class="form-group">
                     <label>Seleccione cantidad de Entradas</label>
-                    <select name="ticketsQuantity" id="tickets" onchange="updateTotal()">
+                    <select class="form-control" name="ticketsQuantity" id="tickets" onchange="updateTotal()">
                     <?php
                         for($i = 1; $i <= $availableCapacity; $i++){ ?>
                             <option value="<?=$i?>"><?=$i?></option>
@@ -54,25 +56,43 @@
                     </select>
      
                 </div>
-                <div class="form-group">
-                    <label>Nro. de Tarjeta</label>
-                    <input class="form-control" name="cardNumber" type="text" size="20">
+
+                <div class="row">
+                    <div class="form-group col-sm-8">
+                        <div class="form-group">
+                            <label>Nro. de Tarjeta</label>
+                            <input class="form-control" name="cardNumber" type="text" size="20" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                    <div class="form-group">
+                        <label>CVV/CVC</label>
+                        <input class="form-control" name="cardCode" type="number" maxlength="3" required>
+                    </div>
                 </div>
+
+
+                </div>
+
+
+
+
+
                 <div class="form-group">
                     <label>Vencimiento</label>
-                    <input class="form-control" name="cardExp" type="date" size="20">
+                    <input class="form-control" name="cardExp" type="month" size="20" min="<?=date('Y-m');?>" required>
                 </div>
                 <div class="form-group">
                     <label>Nombre y Apellido</label>
-                    <input class="form-control" name="cardName" type="text" value="<?php if(isset($profile)) echo $profile->getFirstName() . " " . $profile->getLastName()?>" size="20">                        
+                    <input class="form-control" name="cardName" type="text" value="<?php if(isset($profile)) echo $profile->getFirstName() . " " . $profile->getLastName()?>" size="20" required>                        
                 </div>
                 <div class="form-group">
                     <label>D.N.I</label>
-                    <input class="form-control" name="cardDni" type="text" value="<?php if(isset($profile)) echo $profile->getDni()?>" size="20">                        
+                    <input class="form-control" name="cardDni" type="text" value="<?php if(isset($profile)) echo $profile->getDni()?>" size="20" required>                        
                 </div>
                 <div class="form-group">
                     <label>Codigo de Descuento</label>
-                    <input class="form-control" name="discount" type="text" size="20">                        
+                    <input class="form-control" name="discount" type="text" size="20" required>                        
                 </div>
                 <div class="form-group">
                     <label>Total</label>
@@ -83,11 +103,11 @@
                        <input class="btn btn-primary" type="submit"  value="Comprar" style="font-weight: bold">
                     </div>
                 </div>
-                <?php } ?>
+            <?php } ?>
             </form>
             <?php if(isset($message)){
                 echo $message;
-                ?> <a href="<?=FRONT_ROOT?>">Volver al Inicio</a>
+                ?> <br><a href="<?=FRONT_ROOT?>">Volver al Inicio</a>
             <?php } ?>     
 		</div>
 		<div class="col-sm-1"></div>

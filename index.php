@@ -12,6 +12,12 @@
 	use config\autoload as Autoload;
 	use config\router 	as Router;
 	use config\request 	as Request;
+
+	//setea el idioma
+	setlocale(LC_ALL, "es");
+
+	//setea la zona horaria
+	date_default_timezone_set ("America/Argentina/Buenos_Aires");
 	
 	//inicia el autoload
 	Autoload::start();
