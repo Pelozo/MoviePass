@@ -10,7 +10,7 @@ class CinemaController{
         $this->cinemaDaos = new CinemaDaos();
     }
 
-    public function index(){
+    public function index($err = null){
 
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
@@ -129,9 +129,15 @@ class CinemaController{
         try{
             $this->cinemaDaos->remove($id);
         } catch(\Exception $err){
-            $err = DATABASE_ERR;
+            if($err->getCode() == 23000){
+                $err = "Para eliminar un cine se deben eliminar sus salas antes.";
+            }else{
+                $err = DATABASE_ERR;
+            }
+            $this->index($err);            
         }
         $this->index();
+
     }
 
     //this is used on ajax calls

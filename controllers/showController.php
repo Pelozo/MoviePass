@@ -100,10 +100,10 @@ class ShowController{
                         $this->showDaos->add($show);
                         $this->index();
                     } else {
+                        $show = null;
                         require_once(VIEWS_PATH . "addShow.php");
                     }
                 }catch(\Exception $err){
-                    throw $err;
                     $err = DATABASE_ERR;
 
                     require_once(VIEWS_PATH . "addShow.php");
@@ -253,9 +253,8 @@ class ShowController{
         //verify movie exists and has shows
         try{
             $shows = $this->showDaos->getByIdMovieFuture($id);
-            if(sizeof($shows)<=0) throw new \Exception;
+            if(sizeof($shows) < 1) throw new \Exception;
         }catch(\Exception $ex){
-            throw $ex;
             $homeController = new HomeController();
             $homeController->index();
             return;

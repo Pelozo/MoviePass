@@ -10,7 +10,9 @@
             <div class="col-4 mt-5">
 
                 <div class="row d-flex justify-content-center  text-center">
-                    <h1><?=$show->getMovie()->getTitle()?></h1> 
+                    <div class="col-12"> 
+                        <h1><?=$show->getMovie()->getTitle()?></h1> 
+                    </div>
                     <div class="col-6"> 
                         <img class= "img-fluid max-width: 100%"  src="<?=$show->getMovie()->getImg()?>"/>
                     </div>

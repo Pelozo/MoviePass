@@ -82,6 +82,20 @@ class PurchaseController{
                 return;
             }
 
+            //verify correct number of tickets
+            try{
+                $ticketsSold = $this->purchaseDaos->getSoldTicketsByShow($idShow);
+                $roomCapacity = $show->getRoom()->getCapacity();
+                $availableCapacity = $roomCapacity - $ticketsSold;
+
+                if($availableCapacity < 0) throw new \Exception();
+
+            }catch(\Exception $ex){
+                $message = "Ocurrio un error al realizar la compra.";
+                require_once(VIEWS_PATH . "purchaseForm.php");
+                return;
+            }
+ 
 
 
             $date = date("Y-m-d H:i:s");
@@ -104,9 +118,7 @@ class PurchaseController{
 
                 $message = 'Compra realizada con exito!';
             }catch(\Exception $ex){
-
                 $message = "Ocurrio un error al realizar la compra.";
-
             }
             
         }

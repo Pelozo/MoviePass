@@ -94,7 +94,6 @@ class UserController{
             $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
 
         }catch(\Exception $err){
-            throw $err;
             $err = DATABASE_ERR;
         }
 
