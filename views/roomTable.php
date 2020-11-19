@@ -8,7 +8,7 @@
                 <?php if(isset($err)){?>
                     <div class="col-sm-8"><?=$err?></div>
                 <?php } ?>
-                <div class="col-sm-4">
+                <div class="col-sm-4"> 
                     
                     <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#defaultModal">Agregar Nuevo</button> -->
                     <form action="<?=FRONT_ROOT?>room/add" method="post">

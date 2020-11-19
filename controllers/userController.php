@@ -98,7 +98,7 @@ class UserController{
         }
 
 
-        //insert tickets
+        //get tickets
         $ticketController = new TicketController();
         $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
 

@@ -29,8 +29,6 @@ var now = new Date(),
 minDate = now.toISOString().substring(0,10);
 $('#date').prop('min', minDate);
 
-
-
 //load movies when page is ready
 $(document).ready(function(){
   showResult();

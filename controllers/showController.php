@@ -26,7 +26,7 @@ class ShowController{
         $this->purchaseDaos = new PurchaseDaos();  
     }
 
-    public function index(){
+    public function index($err = null){
 
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
@@ -220,7 +220,12 @@ class ShowController{
         try{
             $this->showDaos->remove($id);
         }catch(\Exception $err){
-            $err = DATABASE_ERR;
+            if($err->getCode() == 23000){
+                $err = "No se puede eliminar una funcion que tenga tickets vendidos";
+            }else{
+                $err = DATABASE_ERR;
+            }
+            $this->index($err);
         }
         $this->index();
     }

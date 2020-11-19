@@ -161,7 +161,7 @@ class RoomController{
             $this->show($idCinema, $err);
         }
         $this->show($idCinema);
-
+ 
     }
 
 
