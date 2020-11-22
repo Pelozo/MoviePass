@@ -73,7 +73,7 @@
                 <?php }
                 foreach($notAvailableShows as $show){ ?>
                 <tr>
-                    <td><?=$show->getRoom()->getIdCinema()?></td>
+                    <td><?=$show->getRoom()->getCinema()->getName()?></td>
                     <td><?=$show->getRoom()->getName()?></td>
                     <td><?=$show->getRoom()->getPrice()?></td>
                     <td><?=$show->getRoom()->getCapacity()?></td>
