@@ -144,8 +144,9 @@ class MovieDaos extends BaseDaos{
     public function getMoviesYear(){
         $query = "SELECT YEAR(releaseDate_movie) as year FROM ". self::TABLE_NAME . " GROUP BY YEAR(releaseDate_movie) order by YEAR(releaseDate_movie) desc";     
 
-        $connection = Connection::getInstance();
+        
         try{
+            $connection = Connection::getInstance();
             return $connection->executeWithAssoc($query);
         }
         catch(\Exception $ex){

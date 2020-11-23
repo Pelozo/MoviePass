@@ -5,9 +5,8 @@ namespace config;
         
         public static function start(){
 
-            spl_autoload_register(function($className)			{
-                $classPath = ucwords(str_replace("\\", DS, ROOT . DS . $className).".php");
-                
+            spl_autoload_register(function($className){
+                $classPath = ucwords(str_replace("\\", DS, ROOT . DS . $className).".php");                
 				include_once($classPath);
             });
             

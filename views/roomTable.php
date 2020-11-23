@@ -5,7 +5,10 @@
         <div class="table-title">
             <div class="row">
                 <div class="col-sm-8"><h2>Administración <b>Salas: <?=$cinema->getName()?></b></h2></div>
-                <div class="col-sm-4">
+                <?php if(isset($err)){?>
+                    <div class="col-sm-8"><?=$err?></div>
+                <?php } ?>
+                <div class="col-sm-4"> 
                     
                     <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#defaultModal">Agregar Nuevo</button> -->
                     <form action="<?=FRONT_ROOT?>room/add" method="post">

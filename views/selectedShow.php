@@ -67,7 +67,7 @@
                     <td><?=$show->getRoom()->getCapacity()?></td>
                     <td><?=$show->getDatetime()?></td>
                     <td><a href="<?=FRONT_ROOT?>purchase/purchaseDetails/<?=$show->getId()?>">
-                    <button type="submit" class="btn btn-info add-new" style="width:340px"><i class="fa fa-plus"></i> Comprar</button>
+                    <button type="submit" class="btn btn-info add-new" style="width:340px"><i class="fa fa-plus"></i>Comprar</button>
                     </a></td>
                 </tr>
                 <?php }
@@ -77,8 +77,9 @@
                     <td><?=$show->getRoom()->getName()?></td>
                     <td><?=$show->getRoom()->getPrice()?></td>
                     <td><?=$show->getRoom()->getCapacity()?></td>
-                    <td><?=$show->getDatetime()?></td>
-                    <td><button type="submit" class="btn btn-info add-new" style="width:340px;background-color:rebeccapurple;border-color:rebeccapurple" disabled><i class="fa fa-plus"></i> Agotado</button></td>
+                    <td><?=$show->getDatetime()?></td>                    
+                    <td><a>
+                    <button type="submit" class="btn btn-info add-new" style="width:340px;background-color:rebeccapurple;border-color:rebeccapurple" disabled><i class="fa fa-plus"></i>Agotado</button></a></td>
                 </tr>
                 <?php } ?>
             </tbody>

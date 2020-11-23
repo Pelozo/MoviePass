@@ -39,11 +39,12 @@ class GenreDaos  extends BaseDaos{
         $query ="SELECT g.id_genre,g.name_genre FROM movies_genres mg  INNER JOIN genres g ON g.id_genre = mg.id_genre
         WHERE id_movie = :id_movie";
         
-        $params['id_movie'] = $idMovie;
+        $params['id_movie'] = $idMovie;        
+        $genres = array();     
 
-        $this->connection = Connection::getInstance();
-        $genres = array();      
         try{
+            
+            $this->connection = Connection::getInstance();
             foreach($this->connection->executeWithAssoc($query, $params) as $genre){
                 
                 array_push($genres, new Genre($genre['id_genre'], $genre['name_genre']));

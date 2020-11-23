@@ -46,7 +46,7 @@ class UserController{
         }
     }
 
-    public function login($email = null, $password = null){
+    public function login($email = null, $password = null, $redirect = null){
 
         if(isset($email, $password)){
             try{
@@ -57,9 +57,12 @@ class UserController{
                         $_SESSION['user'] = $user;
                         $profile = $this->userProfileDaos->getById($user->getId());
                         $_SESSION['profile'] = $profile;
-                        $this->movieController->index();
-                        return;
-                        
+                        if(isset($redirect)){
+                            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+                        }else{
+                            $this->movieController->index();
+                        }
+                        return;                        
                     }else {
                         $err = 'Contraseña incorrecta';
                     }
@@ -80,16 +83,22 @@ class UserController{
     }
 
     public function index(){
+
+        if(!isset($_SESSION['user'])){
+            $redirect = "user/profile";
+            require_once(VIEWS_PATH . "login.php");
+            return;
+        }
+
         try{
             $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
 
         }catch(\Exception $err){
-            throw $err;
             $err = DATABASE_ERR;
         }
 
 
-        //insert tickets
+        //get tickets
         $ticketController = new TicketController();
         $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
 
@@ -98,6 +107,13 @@ class UserController{
 
 
     public function profile($firstName = null, $lastName = null, $dni = null){
+
+        if(!isset($_SESSION['user'])){
+            $redirect = "user/profile";
+            require_once(VIEWS_PATH . "login.php");
+            return;
+        }
+
         if(isset($firstName, $lastName, $dni)){
 
             $profile = new Profile($firstName, $lastName, $dni);
@@ -108,12 +124,12 @@ class UserController{
                 $err = DATABASE_ERR;
             }
 
-            $message = 'Cambios realizados con exito!'; 
+            $message = 'Cambios realizados con exito!';             
             
-            require_once(VIEWS_PATH . "modifyProfile.php");
-        }else{
-            $this->index();       
         }
+
+
+        $this->index();      
     }
 }
 

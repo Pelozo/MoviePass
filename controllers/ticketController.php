@@ -20,8 +20,12 @@ class TicketController{
             return;
         }
 
-
-        return $tickets = $this->ticketDaos->getByUser($_SESSION['user']->getId());
+        try{
+            return $this->ticketDaos->getByUser($_SESSION['user']->getId());
+        }catch(\Exception $ex){{}
+            return array();
+        }
+        
 
     }
 

@@ -6,7 +6,7 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>	
 		<div class="col-sm-6 bg-light boxStyle">
-			<form name="theform" action="" method="POST">
+			<form name="theform" action="<?=FRONT_ROOT?>user/profile" method="POST">
                 <h2>Perfil</h2>
                 <div class="form-group">
                     <label >Email</label>
@@ -43,7 +43,9 @@
 		<div class="col-sm-2"></div>
     </div> 
     <div>
-    <?php if(isset($tickets)){?>
+      
+    <?php if(isset($tickets) && sizeof($tickets)>0){?>
+
 
     <h2>Mis entradas</h2>
         <table id="showTable" class="table table-bordered">

@@ -5,13 +5,16 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>	
 		<div class="col-sm-6 bg-light boxStyle">
-            <form action='login' method='POST'>
+            <form action='<?=FRONT_ROOT?>user/login' method='POST'>
                 <div class="form-group">
                     E-mail<input class="form-control" type='email' name='email' placeholder='Ingrese su e-mail' required>
                 </div>
                 <div class="form-group">
                     Contraseña<input class="form-control" type='password' name='password' placeholder='Ingrese contraseña' required>
                 </div>
+                <?php if(isset($redirect)){?>
+                    <input type="hidden" name="redirect" value="<?=$redirect?>">
+                <?php } ?>
                 <button class="btn btn-primary">Confirmar</button>
             </form>
             <br>
