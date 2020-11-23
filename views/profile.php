@@ -43,9 +43,11 @@
 		<div class="col-sm-2"></div>
     </div> 
     <div>
-
+      
     <?php if(isset($tickets) && sizeof($tickets)>0){?>
 
+
+    <h2>Mis entradas</h2>
         <table id="showTable" class="table table-bordered">
             <col style="width:10%">
             <col style="width:20%">
