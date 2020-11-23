@@ -15,10 +15,10 @@
             $methodParameters = $request->getparameters();          
 
             //le concatena el namespace al nombre de controlador -> "controllers\MovieController"
-            $controllerClassName = "controllers\\". $controllerName;
+            $controllerClassName = "controllers\\". $controllerName ;
 
             //instancia el controlador de la linea anterior
-            $controller = new $controllerClassName;
+            $controller = new $controllerClassName; //new controllers\MovieController();
 
             //si no hay parametros llama a la controladora sin parametros
             if(!isset($methodParameters))            
