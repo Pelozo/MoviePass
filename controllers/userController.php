@@ -54,7 +54,7 @@ class UserController{
         }
     }
 
-    public function login($email = null, $password = null, $redirect = null){
+    public function login($email = null, $password = null){
 
         if(isset($email, $password)){
             try{
@@ -65,7 +65,10 @@ class UserController{
                         $_SESSION['user'] = $user;
                         $profile = $this->userProfileDaos->getById($user->getId());
                         $_SESSION['profile'] = $profile;
-                        if(isset($redirect)){
+                        if(isset($_COOKIE['redirect'])){
+                            $redirect = $_COOKIE['redirect'];
+                            //remove cookie
+                            setcookie("redirect", "$redirect", 1, "/");
                             header("Location: " . FRONT_ROOT . "$redirect"); //justificado
                         }else{
                             $this->movieController->index();
@@ -136,14 +139,17 @@ class UserController{
                 $fbUserProfile = $profileRequest->getGraphNode()->asArray();
             } catch(FacebookResponseException $e) {
                 $err =  SELF::FB_ERR . $e->getMessage();
-                exit;
+                require_once(VIEWS_PATH . "signup.php");
+                return;
             } catch(FacebookSDKException $e) {
                 $err =  SELF::FB_ERR . $e->getMessage();
-                exit;
+                require_once(VIEWS_PATH . "signup.php");
+                return;
             }
 
-            //register in db
+           
             try{
+                 //register in db
                 if(!$this->daos->exists($fbUserProfile['email'])){
                     $user = new User($fbUserProfile['email'],null,2);
                     $this->daos->add($user); 
@@ -154,24 +160,33 @@ class UserController{
                     
                     $_SESSION['user'] = $_user;
                     $_SESSION['profile'] = $profile;
-                    require_once(VIEWS_PATH . "login.php");
-                }else{
+                }else{//just login
                     $user = $this->daos->getByEmail($fbUserProfile['email']);
                     $userProfile = $this->userProfileDaos->getById($user->getId());
                     $_SESSION['user'] = $user;
                     $_SESSION['profile'] = $userProfile;
-                    //TODO move to profile
-                    $this->profile();
                 }
             } catch(\Exception $err){
-                throw $err;
                 $err = DATABASE_ERR;
                 require_once(VIEWS_PATH . "signup.php");
+                return;;
             }
+
+        }
+
+        if(isset($_COOKIE['redirect'])){
+            $redirect = $_COOKIE['redirect'];
+            //remove cookie
+            setcookie("redirect", "$redirect", 1, "/");
+            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+        }else{
+            $this->movieController->index();
         }
     }
 
-    public function registerFacebook(){
+
+
+    public function signupFacebook(){
         
         $fb = new Facebook(array(
             'app_id' => FB_APP_ID,
@@ -192,15 +207,17 @@ class UserController{
                 $accessToken = $helper->getAccessToken();
             }
         } catch(FacebookResponseException $e) {
-             echo 'Graph returned an error: ' . $e->getMessage();
-              exit;
+            $err= 'Graph returned an error: ' . $e->getMessage();
+            exit;
         } catch(FacebookSDKException $e) {
-            echo 'Facebook SDK returned an error: ' . $e->getMessage();
-              exit;
+            $err = 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
         } catch(\Exception $e){
-            echo "AAAAAAAAH";
-            throw $e;           
+            $err = SELF::FB_ERR;
+            exit;           
         }
+
+ 
 
         //ask for user permission
         $loginURL = $helper->getLoginUrl(FB_REDIRECTION, $fbPermissions);
@@ -210,7 +227,20 @@ class UserController{
 
     public function loginFacebook(){
 
-        $this->registerFacebook();
+        $this->signupFacebook();
+
+        echo "asd";
+        return;
+
+
+        if(isset($_COOKIE['redirect'])){
+            $redirect = $_COOKIE['redirect'];
+            //remove cookie
+            setcookie("redirect", "$redirect", 1, "/");
+            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+        }else{
+            $this->movieController->index();
+        }
     }
 
     public function logout(){

@@ -1,4 +1,9 @@
 <?php include(VIEWS_PATH."header.php"); ?>
+<?php
+    if(isset($redirect)){
+        setcookie("redirect", $redirect,  time() + 600, "/");
+    }
+?>
 <h1 class="indexTitle">Iniciar sesión</h1>
 <div style="margin-top:50px" class="container">
 	<div class="row">
@@ -27,11 +32,6 @@
                     </div>
                 </div>
                 
-
-                
-                <?php if(isset($redirect)){?>
-                    <input type="hidden" name="redirect" value="<?=$redirect?>">
-                <?php } ?>
             </form>
             <br>
             <?php if (isset($err)){

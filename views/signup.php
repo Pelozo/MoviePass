@@ -34,7 +34,7 @@
                     <div class ="col-sm-3"></div>
 
                     <div class="col-sm-6">
-                        <a href="<?=FRONT_ROOT?>user/registerFacebook" class="btn btn-block btn-social btn-facebook" style="color:white">
+                        <a href="<?=FRONT_ROOT?>user/signupFacebook" class="btn btn-block btn-social btn-facebook" style="color:white">
                             <span class="fa fa-facebook" style="margin:2px;"></span> Registrarse con facebook
                         </a>
                     </div>
