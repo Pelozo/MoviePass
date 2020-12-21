@@ -21,7 +21,7 @@
                     <div class ="col-sm-3"></div>
 
                     <div class="col-sm-6">
-                        <a href="" class="btn btn-block btn-social btn-facebook" style="color:white">
+                        <a href="<?=FRONT_ROOT?>user/loginFacebook" class="btn btn-block btn-social btn-facebook" style="color:white">
                             <span class="fa fa-facebook" style="margin:2px;"></span> Iniciar sesión con facebook
                         </a>
                     </div>

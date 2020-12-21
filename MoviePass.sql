@@ -26,7 +26,6 @@ create table rols (id_rol int auto_increment,
 create table users (id_user int auto_increment,
 					email_user varchar (50) NOT NULL,
                     password_user varchar (50) NOT NULL,
-
                     idRol_user int NOT NULL,
                     constraint pk_idUser primary key (id_user),
                     constraint fk_idRol foreign key (idRol_user) references rols (id_rol),
@@ -190,3 +189,10 @@ insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQ
 insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),80,0,48000);
 
 insert into tickets (idPurchase_ticket, ticketNumber_ticket, qr_ticket) values (1,20,'qr');
+
+
+
+
+
+ALTER TABLE users
+MODIFY password_user varchar(50);

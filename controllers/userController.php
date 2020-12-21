@@ -6,6 +6,13 @@ use models\userProfile as Profile;
 use daos\userDaos as UserDaos;
 use daos\userProfileDaos as UserProfileDaos;
 
+//fb stuff
+use Facebook\Facebook;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
+//Autoload facebook
+require_once 'facebook/autoload.php';
+
 class UserController{
     private $daos;
     private $userProfileDaos;
@@ -69,6 +76,136 @@ class UserController{
             }
         }
         require_once(VIEWS_PATH . "login.php");
+    }
+
+    public function checkFbPermission(){
+
+        $fb = new Facebook(array(
+            'app_id' => FB_APP_ID,
+            'app_secret' => FB_APP_SECRET,
+            'default_graph_version' => 'v2.9',
+        ));
+
+        try {
+            
+            $helper = $fb->getRedirectLoginHelper();
+            $accessToken = $helper->getAccessToken();
+            $fb->setDefaultAccessToken($accessToken);
+            $response = $fb->get('me?fields=email');
+          } catch(FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+          } catch(FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+          }
+          $response = $response->getGraphNode()->asArray();
+          if(!isset($response['email'])){
+                $err = "Se necesita el email para poder registrase";
+                require_once(VIEWS_PATH . "signup.php");
+                exit;
+          }
+
+        if(isset($accessToken)){            
+            if(isset($_SESSION['facebook_access_token'])){
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);
+            }else{
+                // Token de acceso de corta duración en sesión
+                $_SESSION['facebook_access_token'] = (string) $accessToken;
+           
+                  // Controlador de cliente OAuth 2.0 ayuda a administrar tokens de acceso
+                $oAuth2Client = $fb->getOAuth2Client();
+           
+                // Intercambia una ficha de acceso de corta duración para una persona de larga vida
+                $longLivedAccessToken = $oAuth2Client->getLongLivedAccessToken($_SESSION['facebook_access_token']);
+                $_SESSION['facebook_access_token'] = (string) $longLivedAccessToken;
+           
+                // Establecer token de acceso predeterminado para ser utilizado en el script
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);
+            }
+
+            // Obtener información sobre el perfil de usuario facebook
+            try {
+                $profileRequest = $fb->get('/me?fields=name,first_name,last_name,email,picture');
+                $fbUserProfile = $profileRequest->getGraphNode()->asArray();
+            } catch(FacebookResponseException $e) {
+                echo 'Graph returned an error: ' . $e->getMessage();
+                session_destroy();
+                exit;
+            } catch(FacebookSDKException $e) {
+                echo 'Facebook SDK returned an error: ' . $e->getMessage();
+                exit;
+            }
+
+            //register in db
+            try{
+                if(!$this->daos->exists($fbUserProfile['email'])){
+                    $user = new User($fbUserProfile['email'],null,2);
+                    $this->daos->add($user); 
+                    $_user = $this->daos->getByEmail($user->getEmail());
+                    $profile = new Profile($fbUserProfile['first_name'], $fbUserProfile['last_name'], null);
+                    $profile->setIdUser($_user->getId());
+                    $this->userProfileDaos->add($profile);
+                    
+                    $_SESSION['user'] = $_user;
+                    $_SESSION['profile'] = $profile;
+                    require_once(VIEWS_PATH . "login.php");
+                }else{
+                    $user = $this->daos->getByEmail($fbUserProfile['email']);
+                    $userProfile = $this->userProfileDaos->getById($user->getId());
+                    $_SESSION['user'] = $user;
+                    $_SESSION['profile'] = $userProfile;
+                    //TODO move to profile
+                    $this->profile();
+                }
+            } catch(\Exception $err){
+                throw $err;
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "signup.php");
+            }
+        }
+    }
+
+    public function registerFacebook(){
+        
+        $fb = new Facebook(array(
+            'app_id' => FB_APP_ID,
+            'app_secret' => FB_APP_SECRET,
+            'default_graph_version' => 'v2.9',
+        ));
+
+        //permission needed
+        $fbPermissions = array('email');
+
+        $helper = $fb->getRedirectLoginHelper(); 
+
+        //get token
+        try {
+            if(isset($_SESSION['facebook_access_token'])){
+                $accessToken = $_SESSION['facebook_access_token'];
+            }else{
+                $accessToken = $helper->getAccessToken();
+            }
+        } catch(FacebookResponseException $e) {
+             echo 'Graph returned an error: ' . $e->getMessage();
+              exit;
+        } catch(FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+              exit;
+        } catch(\Exception $e){
+            echo "AAAAAAAAH";
+            throw $e;           
+        }
+
+        //ask for user permission
+        $loginURL = $helper->getLoginUrl(FB_REDIRECTION, $fbPermissions);
+        header('Location: '.$loginURL);        
+        
+    }
+
+    public function loginFacebook(){
+
+        $this->registerFacebook();
     }
 
     public function logout(){
