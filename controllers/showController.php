@@ -7,7 +7,6 @@ use daos\MovieDaos as MovieDaos;
 use daos\RoomDaos as RoomDaos;
 use daos\PurchaseDaos as PurchaseDaos;
 use models\show as Show;
-use controllers\movieController as MovieController;
 
 
 class ShowController{
@@ -27,7 +26,7 @@ class ShowController{
         $this->purchaseDaos = new PurchaseDaos();  
     }
 
-    public function index(){
+    public function index($err = null){
 
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
@@ -36,6 +35,7 @@ class ShowController{
         }
         try{
             $shows = $this->showDaos->getAll();
+            
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
@@ -58,11 +58,11 @@ class ShowController{
         }catch(\Exception $err){
             $err = DATABASE_ERR;
             require_once(VIEWS_PATH . "addShow.php");
+            return;
         }
 
 
-        if (isset($idMovie, $date, $idRoom, $idCinema)){
-      
+        if (isset($idMovie, $date, $idRoom, $idCinema)){      
             $err = null;
 
             if ($idMovie == null){
@@ -73,15 +73,22 @@ class ShowController{
             } else {
                 try{
                     //create new show
-                    $show = new Show($this->movieDaos->getById($idMovie), $this->roomDaos->getById($idRoom), $date);
-                    $result = $this->showDaos->verifyShowDay($show, $idCinema);
+                    $movie = $this->movieDaos->getById($idMovie);
+                    $show = new Show($movie, $this->roomDaos->getById($idRoom), $date);
+                    $result = $this->showDaos->verifyShowDay($show);
+                    
+                    //this function returns an !empty array if the show's movie is playing the same day
                     if(!empty($result)){
                         foreach($result as $res){
                             if($res['id_cinema'] != $idCinema){
-                                $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                                $err = 'No se puede agregar la misma película un mismo día a distintos cines.';
+                            }else{
+                                if($res['idRoom_show'] != $idRoom){
+                                    $err = 'No se puede agregar la misma película un mismo día en diferentes salas del mismo cine.';
+                                }
                             }
                         }
-                    }
+                    } 
 
                     $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                     $valid = $this->verify15Minutes($shows3Days, $show);
@@ -93,6 +100,7 @@ class ShowController{
                         $this->showDaos->add($show);
                         $this->index();
                     } else {
+                        $show = null;
                         require_once(VIEWS_PATH . "addShow.php");
                     }
                 }catch(\Exception $err){
@@ -118,6 +126,7 @@ class ShowController{
             $years = array_column($this->movieDaos->getMoviesYear(),'year');
             $cinemas = $this->cinemaDaos->getAllWithRooms(); 
         } catch(\Exception $err){
+
             $err = DATABASE_ERR;
             require_once(VIEWS_PATH . "addShow.php");
         }
@@ -138,15 +147,23 @@ class ShowController{
 
                 $err = null;
 
-                $result = $this->showDaos->verifyShowDay($show, $idCinema);
+
+                $result = $this->showDaos->verifyShowDay($show);
+                
+                //this function returns an !empty array if the show's movie is playing the same day
                 if(!empty($result)){
+
                     foreach($result as $res){
                         if($res['id_cinema'] != $idCinema){
-                            $err = 'No se puede agregar la misma película un mismo día a distintos cines';
+                            $err = 'No se puede agregar la misma película un mismo día a distintos cines.';
+                        }else{
+                            if($res['idRoom_show'] != $idRoom){
+                                $err = 'No se puede agregar la misma película un mismo día en diferentes salas del mismo cine.';
+                            }
                         }
                     }
-                }
-                        
+                }                
+    
                 $shows3Days = $this->showDaos->verifyShowDatetimeOverlap($show);
                 
                 $valid = $this->verify15Minutes($shows3Days, $show);
@@ -154,6 +171,7 @@ class ShowController{
                 if(!$valid){
                     $err = 'Ya hay una funcion a esa hora.';
                 }
+
                 if($err == null){
                     $this->showDaos->modify($show);
                     $this->index();
@@ -172,7 +190,7 @@ class ShowController{
                 //get show, cinema and room from id
                 $show = $this->showDaos->getById($id);
                 $room = $show->getRoom();
-                $cinemaShow = $this->cinemaDaos->getById($room->getIdCinema());
+                $cinemaShow = $this->cinemaDaos->getById($room->getCinema()->getId());
                 $movie = $show->getMovie();
                 
                 $date = $show->getDatetime();
@@ -202,7 +220,12 @@ class ShowController{
         try{
             $this->showDaos->remove($id);
         }catch(\Exception $err){
-            $err = DATABASE_ERR;
+            if($err->getCode() == 23000){
+                $err = "No se puede eliminar una funcion que tenga tickets vendidos";
+            }else{
+                $err = DATABASE_ERR;
+            }
+            $this->index($err);
         }
         $this->index();
     }
@@ -228,11 +251,25 @@ class ShowController{
         return true;
     }
 
+ 
+
     public function showDetails($id){
+
+        //verify movie exists and has shows
         try{
-            $shows = $this->showDaos->getByIdMovie($id);
+            $shows = $this->showDaos->getByIdMovieFuture($id);
+            if(sizeof($shows) < 1) throw new \Exception;
+        }catch(\Exception $ex){
+            $homeController = new HomeController();
+            $homeController->index();
+            return;
+        }
+
+        try{
+            $movie = $shows[0]->getMovie();
 
             $availableShows = array();
+            $notAvailableShows = array();
             
             //verify if theres available tickets in the room of the show
             foreach($shows as $show){
@@ -240,15 +277,17 @@ class ShowController{
                 $roomCapacity = $show->getRoom()->getCapacity();
                 if(($roomCapacity - $ticketsSold) > 0){
                     array_push($availableShows, $show);
+                }else{
+                    array_push($notAvailableShows, $show);
                 }
             }
 
         }catch(\Exception $err){
             $err = DATABASE_ERR;
+            
         }
         require_once(VIEWS_PATH . "selectedShow.php");
     } 
-
 
 }
 

@@ -6,7 +6,7 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>	
 		<div class="col-sm-6 bg-light boxStyle">
-			<form name="theform" action="" method="POST">
+			<form name="theform" action="<?=FRONT_ROOT?>user/profile" method="POST">
                 <h2>Perfil</h2>
                 <div class="form-group">
                     <label >Email</label>
@@ -42,6 +42,41 @@
 		<div class="col-sm-1"></div>
 		<div class="col-sm-2"></div>
     </div> 
+    <div>
+      
+    <?php if(isset($tickets) && sizeof($tickets)>0){?>
+
+
+    <h2>Mis entradas</h2>
+        <table id="showTable" class="table table-bordered">
+            <col style="width:10%">
+            <col style="width:20%">
+            <col style="width:10%">
+            <col style="width:10%">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Pelicula</th>
+                        <th>Numero entrada</th>
+                        <th>QR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($tickets as $ticket){?>
+                    <tr>
+                        <td><?=$ticket->getPurchase()->getShow()->getDatetime();?></td>
+                        <td><?=$ticket->getPurchase()->getShow()->getMovie()->getTitle();?></td>
+                        <td><?=$ticket->getTicket_number();?></td>
+                        <td><img src="<?=$ticket->getQr();?>" width="200px"></td>
+                    </tr> 
+                    <?php } ?>
+                </tbody>
+        </table>
+
+    <?php } ?>
+
+    </div>
+    
 </div> 
 </main>
 <?php include(VIEWS_PATH."footer.php"); ?>

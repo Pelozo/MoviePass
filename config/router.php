@@ -17,7 +17,7 @@ class Router{
 
             
             //le concatena el namespace al nombre de controlador -> "controllers\MovieController"
-            $controllerClassName = "controllers\\". $controllerName;
+            $controllerClassName = "controllers\\". $controllerName ;
 
             //comprueba si la clase existe y el metodo existen            
             if(!class_exists($controllerClassName, true) || !method_exists($controllerClassName, $methodName)){
@@ -26,8 +26,8 @@ class Router{
             }
 
             //instancia el controlador de la linea anterior
-            $controller = new $controllerClassName;
-        
+            $controller = new $controllerClassName; //new controllers\MovieController();
+
             //si no hay parametros llama a la controladora sin parametros
             if(!isset($methodParameters))            
                 call_user_func(array($controller, $methodName));

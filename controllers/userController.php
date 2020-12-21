@@ -5,6 +5,7 @@ use models\user as User;
 use models\userProfile as Profile;
 use daos\userDaos as UserDaos;
 use daos\userProfileDaos as UserProfileDaos;
+use daos\TicketDaos as TicketDaos;
 
 //fb stuff
 use Facebook\Facebook;
@@ -24,6 +25,7 @@ class UserController{
         $this->daos = new UserDaos();
         $this->userProfileDaos = new UserProfileDaos();
         $this->movieController = new MovieController();
+        $this->ticketDaos = new TicketDaos();
     }
 
     public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
@@ -52,7 +54,7 @@ class UserController{
         }
     }
 
-    public function login($email = null, $password = null){
+    public function login($email = null, $password = null, $redirect = null){
 
         if(isset($email, $password)){
             try{
@@ -63,9 +65,12 @@ class UserController{
                         $_SESSION['user'] = $user;
                         $profile = $this->userProfileDaos->getById($user->getId());
                         $_SESSION['profile'] = $profile;
-                        $this->movieController->index();
-                        return;
-                        
+                        if(isset($redirect)){
+                            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+                        }else{
+                            $this->movieController->index();
+                        }
+                        return;                        
                     }else {
                         $err = 'Contraseña incorrecta';
                     }
@@ -215,17 +220,37 @@ class UserController{
     }
 
     public function index(){
+
+        if(!isset($_SESSION['user'])){
+            $redirect = "user/profile";
+            require_once(VIEWS_PATH . "login.php");
+            return;
+        }
+
         try{
-            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
+            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
+
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
 
-        require_once(VIEWS_PATH . "modifyProfile.php");
+
+        //get tickets
+        $ticketController = new TicketController();
+        $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
+
+        require_once(VIEWS_PATH . "profile.php");       
     }
 
 
     public function profile($firstName = null, $lastName = null, $dni = null){
+
+        if(!isset($_SESSION['user'])){
+            $redirect = "user/profile";
+            require_once(VIEWS_PATH . "login.php");
+            return;
+        }
+
         if(isset($firstName, $lastName, $dni)){
 
             $profile = new Profile($firstName, $lastName, $dni);
@@ -236,12 +261,12 @@ class UserController{
                 $err = DATABASE_ERR;
             }
 
-            $message = 'Cambios realizados con exito!'; 
+            $message = 'Cambios realizados con exito!';             
             
-            require_once(VIEWS_PATH . "modifyProfile.php");
-        }else{
-            $this->index();       
         }
+
+
+        $this->index();      
     }
 }
 

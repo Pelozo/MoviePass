@@ -218,10 +218,13 @@ abstract class BaseDaos{
 
 
         //call db
-        $this->connection = Connection::getInstance();
+        try {
+            $this->connection = Connection::getInstance();
 
-        $this->connection->ExecuteNonQuery($query, $parameters);
-
+            $this->connection->ExecuteNonQuery($query, $parameters);
+        } catch(\Exception $ex){
+            throw $ex;
+        }
 
 
     }

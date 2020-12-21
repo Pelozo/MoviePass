@@ -12,23 +12,35 @@ class RoomController{
         $this->cinemaDaos = new CinemaDaos();
     }
 
-    public function show($id){
+    public function show($id=null, $err = null){
         //check if user is logged and has admin privileges
         if($_SESSION['user'] == null || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
             return;
         }
+        if($id == null){
+            $cinemaController = new CinemaController();
+            $cinemaController->index("Debe ingresar una sala");
+            return;
+        }
+
         try{
             $cinema = $this->cinemaDaos->getById($id);
             $rooms = $this->roomDaos->getByCinema($id);
         }catch(\Exception $err){
             $err = DATABASE_ERR;
+            
         }
 
         require_once(VIEWS_PATH . "roomTable.php");
     }
 
-    //this function returns json becuase it'll be called using ajax in the body of views/addShow.php
+    public function index(){
+        $cinemaController = new CinemaController();
+        $cinemaController->index("Debe ingresar una sala");;
+    }
+
+    //this function returns json because it'll be called using ajax in the body of views/addShow.php
     public function getByCinema($idCinema){
         try{
             echo json_encode($this->roomDaos->getByCinema($idCinema));
@@ -90,7 +102,7 @@ class RoomController{
             //replace null id with id
             $room->setId($id);
             //add cinema id
-            $room->setIdCinema($idCinema);
+            $room->setCinema($idCinema);
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
@@ -112,30 +124,44 @@ class RoomController{
             }
         } else {
         
-        try{
-            //get room from id
-            $room = $this->roomDaos->getById($id);
-            //room not found
-            if(empty($room)){
-                $err = 'No se encontro la sala';
-            }
-        }catch(\Exception $err){
-            $err = DATABASE_ERR;
-            require_once(VIEWS_PATH . "addRoom.php");
+            try{
+                //get room from id
+                $room = $this->roomDaos->getById($id);
+                //room not found
+                if(empty($room)){
+                    $err = 'No se encontro la sala';
+                }
+            }catch(\Exception $err){
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "addRoom.php");
 
-        }
-        require_once(VIEWS_PATH . "addRoom.php");
+            }
+
+            require_once(VIEWS_PATH . "addRoom.php");
 
         }
     }
 
-    public function remove($id){
-        try{
-            $this->roomDaos->remove($id);
-            $this->show($_POST['idCinema']);
-        }catch(\Exception $err){
-            $err = DATABASE_ERR;
+    public function remove($id, $idCinema){
+
+        //check if user is logged and has admin privileges
+        if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
+            header("HTTP/1.1 403");           
+            return;
         }
+
+        try{
+            $this->roomDaos->remove($id);            
+        }catch(\Exception $err){
+            if($err->getCode() == 23000){
+                $err = "No se puede eliminar una sala que tenga funciones pendientes";
+            }else{
+                $err = DATABASE_ERR;
+            }
+            $this->show($idCinema, $err);
+        }
+        $this->show($idCinema);
+ 
     }
 
 

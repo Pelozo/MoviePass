@@ -10,10 +10,10 @@ $(document).ready(function() {
         <div class="table-title">
             <div class="row">
                 <div class="col-sm-8"><h2>Administración <b>Cines</b></h2></div>
-                <div class="col-sm-4">
-                    
-                    <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#defaultModal">Agregar Nuevo</button> -->
-                    
+                <?php if(isset($err)){?>
+                    <div class="col-sm-8"><?=$err?></div>
+                <?php } ?>
+                <div class="col-sm-4"> 
                     <a href="<?=FRONT_ROOT?>cinema/add">
                     <button type="submit" class="btn btn-info add-new"><i class="fa fa-plus"></i> Agregar nuevo</button>
                     </a>
@@ -49,7 +49,7 @@ $(document).ready(function() {
                         <!--<form action="<?=FRONT_ROOT?>room" method="post">
                             <input type="hidden" name="id" value="<?=$cinema->getId()?>">
                         -->
-                            <button class="material-icons" onclick="this.form.submit()">&#xE254;</i>                             
+                            <button class="material-icons" onclick="this.form.submit()">view_list</i>                             
                         </form>
                     </td>
                 </tr>

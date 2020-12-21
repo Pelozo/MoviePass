@@ -1,7 +1,7 @@
 <?php
 namespace models;
 
-class Purchase{
+class Purchase implements \JsonSerializable{
 	private $id;
 	private $user;
 	private $show;
@@ -15,7 +15,8 @@ class Purchase{
         $this->show = $show;
         $this->ticketsQuantity = $ticketsQuantity;
         $this->discount = $discount;
-        $this->date = $date;
+		$this->date = $date;
+		$this->total = $ticketsQuantity * ($show->getRoom()->getPrice());
     }
 
     public function getId(){
@@ -73,5 +74,9 @@ class Purchase{
 	public function setTotal($total){
 		$this->total = $total;
 	}
+
+	public function jsonSerialize(){
+        return get_object_vars($this);
+    }
 }
 ?>
