@@ -12,7 +12,23 @@
                 <div class="form-group">
                     Contraseña<input class="form-control" type='password' name='password' placeholder='Ingrese contraseña' required>
                 </div>
-                <button class="btn btn-primary">Confirmar</button>
+
+                <div class="row">
+                    <div class ="col-sm-3">
+                        <button class="btn btn-primary">Confirmar</button>
+                    </div>
+
+                    <div class ="col-sm-3"></div>
+
+                    <div class="col-sm-6">
+                        <a href="" class="btn btn-block btn-social btn-facebook" style="color:white">
+                            <span class="fa fa-facebook" style="margin:2px;"></span> Iniciar sesión con facebook
+                        </a>
+                    </div>
+                </div>
+                
+
+                
             </form>
             <br>
             <?php if (isset($err)){
