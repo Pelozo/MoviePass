@@ -50,7 +50,6 @@ class PurchaseController{
    
         }catch(\Exception $err){
             $err = DATABASE_ERR;
-            
         }
 
 

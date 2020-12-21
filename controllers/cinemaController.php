@@ -21,6 +21,7 @@ class CinemaController{
         try{
             $cinemas = $this->cinemaDaos->getAll();
         } catch(\Exception $err){
+            throw $err;
             $err = DATABASE_ERR;
         }
         require_once(VIEWS_PATH . "cinemaTable.php");

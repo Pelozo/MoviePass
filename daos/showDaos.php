@@ -34,36 +34,7 @@ class ShowDaos extends BaseDaos{
             $results = array();
     
             foreach ($resultSet as $show){
-                $object = new show(
-                                new Movie(
-                                    $show['id_movie'],
-                                    $show['title_movie'], 
-                                    $show['overview_movie'], 
-                                    $show['img_movie'], 
-                                    $show['language_movie'],                                    
-                                    $this->genreDaos->getByMovie($show['id_movie']),                                    
-                                    $show['releaseDate_movie'],
-                                    $show['duration_movie']),
-                                new Room(
-                                    $show['name_room'],
-                                    $show['price_room'],
-                                    $show['capacity_room'],
-                                    new Cinema(
-                                        $show['name_cinema'],
-                                        $show['address_cinema'],
-                                        $show['city_cinema'],
-                                        $show['zip_cinema'],
-                                        $show['province_cinema']
-                                    )
-                                ),
-                                $show['datetime_show']
-                                );
-                $object->getRoom()->setId($show['id_room']);
-                $object->getRoom()->getCinema()->setId($show['id_cinema']);
-                $object->setId($show['id_show']);
-
-                $results[] = $object;  
-                
+                $results[] = $this->mapShow($show);                
             }
     
             return $results;
@@ -72,6 +43,38 @@ class ShowDaos extends BaseDaos{
             throw $ex;
         }
         
+    }
+
+    public function mapShow($showArray){
+        $object = new show(
+            new Movie(
+                $showArray['id_movie'],
+                $showArray['title_movie'], 
+                $showArray['overview_movie'], 
+                $showArray['img_movie'], 
+                $showArray['language_movie'],                                    
+                $this->genreDaos->getByMovie($showArray['id_movie']),                                    
+                $showArray['releaseDate_movie'],
+                $showArray['duration_movie']),
+            new Room(
+                $showArray['name_room'],
+                $showArray['price_room'],
+                $showArray['capacity_room'],
+                new Cinema(
+                    $showArray['name_cinema'],
+                    $showArray['address_cinema'],
+                    $showArray['city_cinema'],
+                    $showArray['zip_cinema'],
+                    $showArray['province_cinema']
+                )
+            ),
+            $showArray['datetime_show']
+            );
+        $object->getRoom()->setId($showArray['id_room']);
+        $object->getRoom()->getCinema()->setId($showArray['id_cinema']);
+        $object->setId($showArray['id_show']);
+        return $object;
+
     }
 
     public function exists($id){
@@ -93,39 +96,10 @@ class ShowDaos extends BaseDaos{
 
             if($resultSet == null){
                 return null;
-            }else{
-                $resultSet = $resultSet[0];
             }
-    
-            $object = new show(
-                            new Movie(
-                                $resultSet['id_movie'],
-                                $resultSet['title_movie'], 
-                                $resultSet['overview_movie'], 
-                                $resultSet['img_movie'], 
-                                $resultSet['language_movie'],                                    
-                                $this->genreDaos->getByMovie($resultSet['id_movie']),                                    
-                                $resultSet['releaseDate_movie'],
-                                $resultSet['duration_movie']),
-                            new Room(
-                                $resultSet['name_room'],
-                                $resultSet['price_room'],
-                                $resultSet['capacity_room'],
-                                new Cinema(
-                                    $resultSet['name_cinema'],
-                                    $resultSet['address_cinema'],
-                                    $resultSet['city_cinema'],
-                                    $resultSet['zip_cinema'],
-                                    $resultSet['province_cinema']
-                                )
-                            ),
-                            $resultSet['datetime_show']
-                            );
-            $object->getRoom()->setId($resultSet['id_room']);
-            $object->getRoom()->getCinema()->setId($resultSet['id_cinema']);
-            $object->setId($resultSet['id_show']);
-    
-            return $object;
+
+            $resultSet = $resultSet[0];
+            return $this->mapShow($resultSet);
         }
         catch(\Exception $ex){
             throw $ex;
@@ -242,33 +216,7 @@ class ShowDaos extends BaseDaos{
             $results = array();
 
             foreach ($resultSet as $show){
-                $object = new show(
-                                new Movie(
-                                    $show['id_movie'],
-                                    $show['title_movie'], 
-                                    $show['overview_movie'], 
-                                    $show['img_movie'], 
-                                    $show['language_movie'],                                    
-                                    null,
-                                    $show['releaseDate_movie'],
-                                    $show['duration_movie']),
-                                new Room(
-                                    $show['id_room'],
-                                    $show['price_room'],
-                                    $show['capacity_room'],
-                                    new Cinema(
-                                        $show['name_cinema'],
-                                        $show['address_cinema'],
-                                        $show['city_cinema'],
-                                        $show['zip_cinema'],
-                                        $show['province_cinema']
-                                    )
-                                ),
-                                $show['datetime_show']);
-
-                $object->setId($show['id_show']);
-                $object->getRoom()->getCinema()->setId($show['id_cinema']);
-                $results[] = $object;
+                $results[] = $this->mapShow($show);
             }
             return $results;
 
@@ -296,34 +244,7 @@ class ShowDaos extends BaseDaos{
             $results = array();
 
             foreach ($resultSet as $show){
-                $object = new show(
-                                    new Movie(
-                                        $show['id_movie'],
-                                        $show['title_movie'], 
-                                        $show['overview_movie'], 
-                                        $show['img_movie'], 
-                                        $show['language_movie'],                                    
-                                        $this->genreDaos->getByMovie($show['id_movie']),                                    
-                                        $show['releaseDate_movie'],
-                                        $show['duration_movie']),
-                                    new Room(
-                                        $show['name_room'],
-                                        $show['price_room'],
-                                        $show['capacity_room'],
-                                        new Cinema(
-                                            $show['name_cinema'],
-                                            $show['address_cinema'],
-                                            $show['city_cinema'],
-                                            $show['zip_cinema'],
-                                            $show['province_cinema']
-                                        )
-                                    ),
-                                    $show['datetime_show']
-                                );
-                $object->getRoom()->setId($show['id_room']);
-                $object->getRoom()->getCinema()->setId($show['id_cinema']);
-                $object->setId($show['id_show']);
-                $results[] = $object;
+                $results[] = $this->mapShow($show);
             }
 
             return $results;
@@ -352,34 +273,7 @@ class ShowDaos extends BaseDaos{
             $results = array();
 
             foreach ($resultSet as $show){
-                $object = new show(
-                                    new Movie(
-                                        $show['id_movie'],
-                                        $show['title_movie'], 
-                                        $show['overview_movie'], 
-                                        $show['img_movie'], 
-                                        $show['language_movie'],                                    
-                                        $this->genreDaos->getByMovie($show['id_movie']),                                    
-                                        $show['releaseDate_movie'],
-                                        $show['duration_movie']),
-                                    new Room(
-                                        $show['name_room'],
-                                        $show['price_room'],
-                                        $show['capacity_room'],
-                                        new Cinema(
-                                            $show['name_cinema'],
-                                            $show['address_cinema'],
-                                            $show['city_cinema'],
-                                            $show['zip_cinema'],
-                                            $show['province_cinema']
-                                        )
-                                    ),
-                                    $show['datetime_show']
-                                );
-                $object->getRoom()->setId($show['id_room']);
-                $object->getRoom()->getCinema()->setId($show['id_cinema']);
-                $object->setId($show['id_show']);
-                $results[] = $object;
+                $results[] = $this->mapShow($show);
             }
 
             return $results;
