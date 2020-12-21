@@ -18,6 +18,8 @@ class UserController{
     private $userProfileDaos;
     private $movieController;
 
+    const FB_ERR = "Ocurrió un error al conectar con facebook";
+
     public function __construct(){
         $this->daos = new UserDaos();
         $this->userProfileDaos = new UserProfileDaos();
@@ -39,7 +41,6 @@ class UserController{
                     $profile = new Profile($firstName, $lastName, $dni);
                     $profile->setIdUser($_user->getId());
                     $this->userProfileDaos->add($profile);
-                    //$this->login();
                     require_once(VIEWS_PATH . "login.php");
                 } 
             } catch(\Exception $err){
@@ -129,11 +130,10 @@ class UserController{
                 $profileRequest = $fb->get('/me?fields=name,first_name,last_name,email,picture');
                 $fbUserProfile = $profileRequest->getGraphNode()->asArray();
             } catch(FacebookResponseException $e) {
-                echo 'Graph returned an error: ' . $e->getMessage();
-                session_destroy();
+                $err =  SELF::FB_ERR . $e->getMessage();
                 exit;
             } catch(FacebookSDKException $e) {
-                echo 'Facebook SDK returned an error: ' . $e->getMessage();
+                $err =  SELF::FB_ERR . $e->getMessage();
                 exit;
             }
 
