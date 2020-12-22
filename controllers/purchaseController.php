@@ -10,6 +10,8 @@ use models\userProfile as Profile;
 use daos\userProfileDaos as UserProfileDaos;
 use daos\ticketDaos as TicketDaos;
 
+use util\mailer as Mailer;
+
 class PurchaseController{
     private $purchaseDaos;
     private $ticketDaos;
@@ -26,9 +28,9 @@ class PurchaseController{
     public function purchaseDetails($id){
 
         //if user is not logged redirect to login
-        if(!isset($_SESSION['user'])){
-            $redirect = "purchase/purchaseDetails/$id";
-            require_once(VIEWS_PATH . "login.php");
+        if(!isset($_SESSION['user'])){            
+            setcookie("redirect", "purchase/purchaseDetails/$id", time() + 6000, "/");
+            (new UserController())->login();
             return;
         }
 
@@ -58,14 +60,16 @@ class PurchaseController{
 
     public function makePurchase($idShow, $ticketsQuantity = null, $cardNumber = null, $cardCode = null, $cardExp = null, $cardName = null, $cardDni = null, $discount = null){
 
-        $user = $_SESSION['user'];
 
-        //If user not logged redirect to login
-        if(!$user){
-            $redirect = "purchase/purchaseDetails/$idShow";
-            require_once(VIEWS_PATH . "login.php");
+        //if user is not logged redirect to login
+        if(!isset($_SESSION['user'])){            
+            setcookie("redirect", "purchase/purchaseDetails/$idShow", time() + 6000, "/");
+            (new UserController())->login();
             return;
         }
+
+        
+        $user = $_SESSION['user'];
 
         //form was sent
         if(isset($ticketsQuantity, $cardNumber, $cardCode, $cardExp, $cardName, $cardDni, $discount)){
@@ -100,6 +104,8 @@ class PurchaseController{
             $date = date("Y-m-d H:i:s");
 
             $purchase = new Purchase($user, $show, $ticketsQuantity, 0, $date);
+
+            //TODO change
             $purchase->setTotal(($show->getRoom()->getPrice()) * $ticketsQuantity);
 
             try{
@@ -110,12 +116,15 @@ class PurchaseController{
                 $purchase->setId($idPurchase);
                 
                 //generate tickets
+                $tickets = array();
                 for($i = 0; $i< $ticketsQuantity; $i++){
                     $ticket = new Ticket($purchase, rand());
                     $this->ticketDaos->add($ticket);
+                    $tickets[] = $ticket;
                 }
 
-                $message = 'Compra realizada con exito!';
+                $message = 'Compra realizada con exito! Te mandamos un mail con tus entradas.';
+                $this->generateEmail($purchase, $tickets);
             }catch(\Exception $ex){
                 $message = "Ocurrio un error al realizar la compra.";
             }
@@ -202,6 +211,26 @@ class PurchaseController{
         }
         
         require_once(VIEWS_PATH . "statsTotal.php");
+    }
+
+
+    private function generateEmail($purchase, $tickets){
+
+        $emailTemplate = ROOT.'\views\mail\purchase.php';
+        $mailer = Mailer::getInstance();
+
+        $movie = $purchase->getShow()->getMovie()->getTitle();
+        $email = $purchase->getUser()->getEmail();
+
+        ob_start();
+        include($emailTemplate);
+        $content = ob_get_contents();
+
+        $mailer->sendEmail($email, "Tu compra en MoviePass", $content);
+        ob_end_clean();
+
+
+
     }
 }
 

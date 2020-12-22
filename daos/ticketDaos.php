@@ -73,7 +73,8 @@ class TicketDaos extends BaseDaos{
                                     $ticket['discount_purchase'],
                                     $ticket['date_purchase']
                                 ),
-                                $ticket['ticketNumber_ticket']
+                                $ticket['ticketNumber_ticket'],
+                                $ticket['qr_ticket']
                             );
                 $object->getPurchase()->setId($ticket['id_purchase']);
                 //$object->getPurchase()->getUser()->setId($ticket['id_user']);

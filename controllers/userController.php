@@ -7,6 +7,8 @@ use daos\userDaos as UserDaos;
 use daos\userProfileDaos as UserProfileDaos;
 use daos\TicketDaos as TicketDaos;
 
+use util\mailer as Mailer;
+
 //fb stuff
 use Facebook\Facebook;
 use Facebook\Exceptions\FacebookResponseException;
@@ -258,8 +260,7 @@ class UserController{
         }
 
         try{
-            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
-
+            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
@@ -268,6 +269,12 @@ class UserController{
         //get tickets
         $ticketController = new TicketController();
         $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
+
+        $mailer = Mailer::getInstance();
+        //$mailer->sendEmail("el.pelozo@gmail.com", "test", "test");
+        $mailer->sendPurchase("el.pelozo@gmail.com");
+
+
 
         require_once(VIEWS_PATH . "profile.php");       
     }

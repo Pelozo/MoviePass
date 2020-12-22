@@ -19,8 +19,16 @@ class Router{
             //le concatena el namespace al nombre de controlador -> "controllers\MovieController"
             $controllerClassName = "controllers\\". $controllerName ;
 
-            //comprueba si la clase existe y el metodo existen            
+            //comprueba si la clase existe y el metodo existen
+            /*         
             if(!class_exists($controllerClassName, true) || !method_exists($controllerClassName, $methodName)){
+                $controllerClassName = "controllers\\HomeController";
+                $methodName = "invalid";
+            }
+            */
+
+            //comprueba si la clase exista, y si el metodo existe y es público
+            if(!class_exists($controllerClassName, true) || !(method_exists($controllerClassName, $methodName)  && (new \ReflectionMethod($controllerClassName, $methodName))->isPublic())){
                 $controllerClassName = "controllers\\HomeController";
                 $methodName = "invalid";
             }
