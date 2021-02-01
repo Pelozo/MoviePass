@@ -10,9 +10,9 @@ use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
  
 //llaves de facebook verifique en https://developers.facebook.com/
-$appId         = '378115920236344'; //Identificador de la Aplicación
-$appSecret     = '3a8165ae53fa3fe5b18bf720d299db77'; //Clave secreta de la aplicación
-$redirectURL   = 'http://localhost/facu/moviiepass/user/facebook'; //Callback URL
+$appId         = ''; //Identificador de la Aplicación
+$appSecret     = ''; //Clave secreta de la aplicación
+$redirectURL   = ''; //Callback URL
 $fbPermissions = array('');  //Permisos opcionales
  
 //creamos var fb y almacenamos el array de credenciales
