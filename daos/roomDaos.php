@@ -1,8 +1,8 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\cinema as Cinema;
-use models\room as Room;
+use daos\BaseDaos as BaseDaos;
+use models\Cinema as Cinema;
+use models\Room as Room;
 
 class RoomDaos extends BaseDaos{
 

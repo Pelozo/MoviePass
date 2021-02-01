@@ -1,12 +1,12 @@
 <?php
 namespace controllers;
-use daos\showDaos as ShowDaos;
-use daos\cinemaDaos as CinemaDaos;
+use daos\ShowDaos as ShowDaos;
+use daos\CinemaDaos as CinemaDaos;
 use daos\GenreDaos as GenreDaos;
 use daos\MovieDaos as MovieDaos;
 use daos\RoomDaos as RoomDaos;
 use daos\PurchaseDaos as PurchaseDaos;
-use models\show as Show;
+use models\Show as Show;
 
 
 class ShowController{

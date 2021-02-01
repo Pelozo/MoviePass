@@ -1,16 +1,20 @@
 <?php
 namespace controllers;
 
-use models\purchase as Purchase;
-use daos\purchaseDaos as PurchaseDaos;
-use models\show as Show;
-use daos\showDaos as ShowDaos;
-use models\ticket as Ticket;
-use models\userProfile as Profile;
-use daos\userProfileDaos as UserProfileDaos;
-use daos\ticketDaos as TicketDaos;
+use models\Purchase as Purchase;
+use models\Show as Show;
+use models\UserProfile as Profile;
+use models\Ticket as Ticket;
+
+use daos\PurchaseDaos as PurchaseDaos;
+use daos\ShowDaos as ShowDaos;
+use daos\UserProfileDaos as UserProfileDaos;
+use daos\TicketDaos as TicketDaos;
+
+use controllers\userController as UserController;
 
 use util\mailer as Mailer;
+
 
 class PurchaseController{
     private $purchaseDaos;
@@ -44,16 +48,23 @@ class PurchaseController{
             return;
         }
 
+        
         try{
             $ticketsSold = $this->purchaseDaos->getSoldTicketsByShow($id);
             $roomCapacity = $show->getRoom()->getCapacity();
             $availableCapacity = $roomCapacity - $ticketsSold;
-            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
+            //$profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
    
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
-
+        
+        //verify discount
+        $discount = 0;
+        if((date("N") == 2 || date("N") == 3)){
+            $discount = 25;
+            $discountMessage = "Los días martes y miercoles comprando dos o más entradas tenés un 25% de descuento.";
+        }
 
         require_once(VIEWS_PATH . "purchaseForm.php");
     }
@@ -98,15 +109,20 @@ class PurchaseController{
                 require_once(VIEWS_PATH . "purchaseForm.php");
                 return;
             }
- 
 
+            
+            //verify discount
+            $discount = 0;
+            if($ticketsQuantity > 1 && (date("N") == 2 || date("N") == 3)){
+                $discount = 25;
+            }
 
             $date = date("Y-m-d H:i:s");
 
-            $purchase = new Purchase($user, $show, $ticketsQuantity, 0, $date);
+            $purchase = new Purchase($user, $show, $ticketsQuantity, $discount, $date);
 
-            //TODO change
-            $purchase->setTotal(($show->getRoom()->getPrice()) * $ticketsQuantity);
+            //TODO test this
+            $purchase->setTotal((($show->getRoom()->getPrice()) * $ticketsQuantity) * (1 - ($discount/100)));
 
             try{
                 $this->purchaseDaos->add($purchase);
@@ -216,7 +232,7 @@ class PurchaseController{
 
     private function generateEmail($purchase, $tickets){
 
-        $emailTemplate = ROOT.'\views\mail\purchase.php';
+        $emailTemplate = ROOT.'/views/mail/purchase.php';
         $mailer = Mailer::getInstance();
 
         $movie = $purchase->getShow()->getMovie()->getTitle();

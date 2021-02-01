@@ -1,8 +1,8 @@
 <?php
 namespace controllers;
-use daos\roomDaos as RoomDaos;
-use daos\cinemaDaos as CinemaDaos;
-use models\room as Room;
+use daos\RoomDaos as RoomDaos;
+use daos\CinemaDaos as CinemaDaos;
+use models\Room as Room;
 
 class RoomController{
     private $roomDaos;

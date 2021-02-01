@@ -2,7 +2,7 @@
 namespace controllers;
 use daos\MovieDaos as MovieDaos;
 use daos\GenreDaos as GenreDaos;
-use models\movie as Movie;
+use models\Movie as Movie;
 
 class MovieController{
 
@@ -12,6 +12,8 @@ class MovieController{
     public function __construct(){
         $this->movieDaos = new MovieDaos();
         $this->genreDaos = GenreDaos::getInstance();
+		
+		
     }
     
     public function index(){
@@ -49,6 +51,7 @@ class MovieController{
         if($name == "all") $name = null;
         try{
             $movies = $this->movieDaos->getMoviesFiltered($genreRequired, $yearRequired, $name, $page);
+			//var_dump($movies);			
             echo json_encode($movies);
         } catch(\Exception $err){
             echo '[]';
@@ -90,7 +93,7 @@ class MovieController{
             echo '[]';
         }
     }
-
+	
 
 
 }

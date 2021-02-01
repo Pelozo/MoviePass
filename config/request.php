@@ -26,7 +26,7 @@ class Request{
         if(empty($urlArray)){
             $this->controller = "home";            
         }else{//si hay algo en el array, agarrar el primer elemento [movie], lo pasa a minuscula todo menos el primer caracter -> [Movie]. Después lo saca del array
-            $this->controller = ucwords(array_shift($urlArray));
+            $this->controller = array_shift($urlArray);
         }
         //si el array está vacio (después de sacarle el controller) entonces vamos al metodo "index", sino guardamos el metodo [show]
         if(empty($urlArray)){

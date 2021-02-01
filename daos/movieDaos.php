@@ -1,7 +1,7 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\movie as Movie;
+use daos\BaseDaos as BaseDaos;
+use models\Movie as Movie;
 
 class MovieDaos extends BaseDaos{
 

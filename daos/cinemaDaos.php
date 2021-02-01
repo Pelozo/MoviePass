@@ -1,7 +1,7 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\cinema as Cinema;
+use daos\BaseDaos as BaseDaos;
+use models\Cinema as Cinema;
 
 class CinemaDaos extends BaseDaos{
 

@@ -1,6 +1,6 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteBase /facu/MoviePass/
+RewriteBase /moviepass/
 
 #not very happy with this thing but i'll leave it for now.
 RewriteCond %{QUERY_STRING} ^genre=(all|[0-9]{1,5})&year=(all|[0-9]{4})$ [NC]

@@ -1,11 +1,13 @@
 <?php
 namespace controllers;
-
 use models\user as User;
 use models\userProfile as Profile;
-use daos\userDaos as UserDaos;
-use daos\userProfileDaos as UserProfileDaos;
+use daos\UserDaos as UserDaos;
+use daos\UserProfileDaos as UserProfileDaos;
 use daos\TicketDaos as TicketDaos;
+
+use controllers\movieController as MovieController;
+use controllers\ticketController as TicketController;
 
 use util\mailer as Mailer;
 
@@ -14,7 +16,7 @@ use Facebook\Facebook;
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
 //Autoload facebook
-require_once 'facebook/autoload.php';
+require_once 'Facebook/autoload.php';
 
 class UserController{
     private $daos;
@@ -28,6 +30,7 @@ class UserController{
         $this->userProfileDaos = new UserProfileDaos();
         $this->movieController = new MovieController();
         $this->ticketDaos = new TicketDaos();
+
     }
 
     public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
@@ -48,6 +51,7 @@ class UserController{
                     require_once(VIEWS_PATH . "login.php");
                 } 
             } catch(\Exception $err){
+				throw $err;
                 $err = DATABASE_ERR;
                 require_once(VIEWS_PATH . "signup.php");
             }
@@ -269,12 +273,6 @@ class UserController{
         //get tickets
         $ticketController = new TicketController();
         $tickets = $ticketController->ticketByUser($_SESSION['user']->getId());
-
-        $mailer = Mailer::getInstance();
-        //$mailer->sendEmail("el.pelozo@gmail.com", "test", "test");
-        $mailer->sendPurchase("el.pelozo@gmail.com");
-
-
 
         require_once(VIEWS_PATH . "profile.php");       
     }

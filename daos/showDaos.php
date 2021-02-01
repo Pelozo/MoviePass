@@ -1,10 +1,10 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\show as Show;
-use models\movie as Movie;
-use models\room as Room;
-use models\cinema as Cinema;
+use daos\BaseDaos as BaseDaos;
+use models\Show as Show;
+use models\Movie as Movie;
+use models\Room as Room;
+use models\Cinema as Cinema;
 
 class ShowDaos extends BaseDaos{
 

@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
-use daos\cinemaDaos as CinemaDaos;
-use models\cinema as Cinema;
+use daos\CinemaDaos as CinemaDaos;
+use models\Cinema as Cinema;
 
 class CinemaController{
     private $cinemaDaos;

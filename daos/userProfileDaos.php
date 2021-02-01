@@ -1,11 +1,11 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
+use daos\BaseDaos as BaseDaos;
 
 
 class UserProfileDaos extends BaseDaos{
 
-    const TABLE_NAME = "userprofiles";
+    const TABLE_NAME = "userProfiles";
 
     public function __construct(){
         parent::__construct(self::TABLE_NAME, 'UserProfile');        

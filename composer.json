@@ -1,6 +1,0 @@
-{
-    "require": {
-        "facebook/graph-sdk": "^5.7",
-        "phpmailer/phpmailer": "^6.2"
-    }
-}
