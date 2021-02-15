@@ -2,12 +2,16 @@
 namespace controllers;
 use daos\CinemaDaos as CinemaDaos;
 use models\Cinema as Cinema;
+use models\Address as Address;
+use models\Province as Province;
 
 class CinemaController{
     private $cinemaDaos;
+    private $provinceController;
 
     public function __construct(){
         $this->cinemaDaos = new CinemaDaos();
+        $this->provinceController = new ProvinceController();
     }
 
     public function index($err = null){
@@ -34,20 +38,19 @@ class CinemaController{
             return;
         }
         
+        $provinces = $this->provinceController->getAll();
         if(isset($name, $address, $city, $province, $postal)){
 
-
-            $cinema = new Cinema($name, $address, $city, $postal, $province);
+            $cinema = new Cinema($name, new Address($address, $city, $postal, new Province($province)));
 
             //check for empty fields
             $required = array('name' => 'nombre',  'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
-            foreach($required as $field => $name) {
-                if (empty($_POST[$field])) {
+            foreach($required as $field => $value) {
+                if (empty($$field)) { 
+                    $error = ucfirst($required[$field]) . " no puede estar vacio";
 
-                  $err = ucfirst($required[$field]) . " no puede estar vacio";
-
-                  require_once(VIEWS_PATH . "addCinema.php");
-                  return;
+                    require_once(VIEWS_PATH . "addCinema.php");
+                    return;
                 }
             }
 
@@ -58,12 +61,16 @@ class CinemaController{
                 $this->index();
             }
             catch(\Exception $err){
-                $err = DATABASE_ERR;
+                if($err->getCode()){
+                    $error = "Ya hay un cine en esa dirección";
+                }else{
+                    $error = DATABASE_ERR;
+                }
                 require_once(VIEWS_PATH . "addCinema.php");
             }
-            } else {
-                require_once(VIEWS_PATH . "addCinema.php");
-            }
+        } else {
+            require_once(VIEWS_PATH . "addCinema.php");
+        }
 
     }
 
@@ -76,19 +83,21 @@ class CinemaController{
             return;
         }
 
+        $provinces = $this->provinceController->getAll();
+
         //check if form was sent
         if(isset($id, $name, $address, $city, $province, $postal)){
 
-            $cinema = new Cinema($name, $address, $city, $postal, $province);
+            $cinema = new Cinema($name, new Address($address, $city, $postal, new Province($province)));
+            
             //replace new id with old id
-            $cinema->setId($_POST['id']);
+            $cinema->setId($id);
 
             //check for empty fields
             $required = array('name' => 'nombre', 'address' => 'dirección', 'city' => 'ciudad', 'province' => 'provincia', 'postal' => 'código postal');
-            foreach($required as $field => $name) {
-                if (empty($_POST[$field])) {
-                  
-                  $err = ucfirst($required[$field]) . " no puede estar vacio";
+            foreach($required as $field => $value) {
+                if (empty($$field)) {                  
+                  $error = ucfirst($required[$field]) . " no puede estar vacio";
 
                   require_once(VIEWS_PATH . "addCinema.php");
                   return;
@@ -100,7 +109,7 @@ class CinemaController{
                 //back to index
                 $this->index();
             } catch(\Exception $err){
-                $err = DATABASE_ERR;
+                $error = DATABASE_ERR;
                 require_once(VIEWS_PATH . "addCinema.php");
             }
         }else{
@@ -114,7 +123,7 @@ class CinemaController{
                     return;
                 }
             } catch(\Exception $err){
-                $err = DATABASE_ERR;
+                $error = DATABASE_ERR;
             }
 
         require_once(VIEWS_PATH . "addCinema.php");

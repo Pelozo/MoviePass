@@ -64,9 +64,8 @@ class RoomController{
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
-            foreach($required as $field => $name) {
-                if (empty($_POST[$field])) {
-
+            foreach($required as $field => $value) {
+                if (empty($$field)) { 
                   $err = ucfirst($required[$field]) . " no puede estar vacio";
                   require_once(VIEWS_PATH . "addRoom.php");
                   return;
@@ -87,11 +86,17 @@ class RoomController{
     
     }
 
-    public function modify($idCinema, $id, $name = null, $capacity = null, $ticket = null){
+    public function modify($idCinema = null, $id = null, $name = null, $capacity = null, $ticket = null){
  
         //check if user is logged and has admin privileges
         if(!isset($_SESSION['user']) || $_SESSION['user']->getIdRol() != 1){
             header("HTTP/1.1 403");           
+            return;
+        }
+
+        //check if we have necesary params
+        if($idCinema == null || $id == null){
+            header("HTTP/1.1 400");           
             return;
         }
         
@@ -106,8 +111,8 @@ class RoomController{
 
             //check for empty fields
             $required = array('name' => 'nombre', 'capacity' => 'capacidad', 'ticket' => 'precio de entrada');
-            foreach($required as $field => $name) {
-                if (empty($_POST[$field])) {
+            foreach($required as $field => $value) {
+                if (empty($$field)) { 
                   $err = ucfirst($required[$field]) . " no puede estar vacio";
                   require_once(VIEWS_PATH . "addRoom.php");
                   return;

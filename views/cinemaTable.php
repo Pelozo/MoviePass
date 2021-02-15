@@ -26,7 +26,6 @@ $(document).ready(function() {
                 <tr>
                     <th>Nombre</th>
                     <th>Dirección</th>
-                    <th>Ciudad y Provincia</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -35,7 +34,6 @@ $(document).ready(function() {
                 <tr>
                     <td><?=$cinema->getName()?></td>
                     <td><?=$cinema->getAddress()?></td>
-                    <td><?=$cinema->getCity(). ", " . $cinema->getProvince()?></td>
                     <td>
                         <form action="<?=FRONT_ROOT?>cinema/modify/" method="post">
                             <input type="hidden" name="id" value="<?=$cinema->getId()?>">

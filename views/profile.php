@@ -48,6 +48,9 @@
 
 
     <h2>Mis entradas</h2>
+    <div id="toolbar"> 
+   <button type='button' class='btn btn-warning btn-lg'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Stampa mancanti</button> 
+</div>
         <table id="showTable" class="table table-bordered">
             <col style="width:10%">
             <col style="width:20%">

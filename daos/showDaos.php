@@ -5,6 +5,8 @@ use models\Show as Show;
 use models\Movie as Movie;
 use models\Room as Room;
 use models\Cinema as Cinema;
+use models\Address as Address;
+use models\Province as Province;
 
 class ShowDaos extends BaseDaos{
 
@@ -20,10 +22,12 @@ class ShowDaos extends BaseDaos{
     public function getAll(){
         //var_dump(parent::_getAll());
 
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.*, a.*, p.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         ORDER BY s.datetime_show";
 
         
@@ -62,10 +66,13 @@ class ShowDaos extends BaseDaos{
                 $showArray['capacity_room'],
                 new Cinema(
                     $showArray['name_cinema'],
-                    $showArray['address_cinema'],
-                    $showArray['city_cinema'],
-                    $showArray['zip_cinema'],
-                    $showArray['province_cinema']
+                    new Address($showArray['block_address'],
+                        $showArray['city_address'],
+                        $showArray['zip_address'],
+                        new Province($showArray['id_province'],
+                            $showArray['name_province']
+                        )
+                    )
                 )
             ),
             $showArray['datetime_show']
@@ -73,6 +80,8 @@ class ShowDaos extends BaseDaos{
         $object->getRoom()->setId($showArray['id_room']);
         $object->getRoom()->getCinema()->setId($showArray['id_cinema']);
         $object->setId($showArray['id_show']);
+        $object->getRoom()->getCinema()->getAddress()->setId($showArray['id_address']);
+        $object->getRoom()->getCinema()->getAddress()->getProvince()->setId($showArray['id_province']);
         return $object;
 
     }
@@ -82,10 +91,12 @@ class ShowDaos extends BaseDaos{
     }
 
     public function getById($id){
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.*, a.*, p.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE s.id_show = :id_show";
 
         
@@ -197,10 +208,12 @@ class ShowDaos extends BaseDaos{
     }
 
     public function verifyShowDatetimeOverlap($_show){
-        $query = "SELECT s.*, m.*, r.*, c.* FROM shows s
+        $query = "SELECT s.*, m.*, r.*, c.*, a.*, p.* FROM shows s
         inner join movies m on m.id_movie = s.idMovie_show
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON c.id_cinema = r.idCinema_room
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE (DATE(s.datetime_show) = DATE(DATE_SUB(:datetime_show, INTERVAL 1 DAY))
         OR DATE(s.datetime_show) = DATE(:datetime_show)
         OR DATE(s.datetime_show) = DATE(DATE_ADD(:datetime_show, INTERVAL 1 DAY)))
@@ -227,10 +240,12 @@ class ShowDaos extends BaseDaos{
     }
 
     public function getByIdMovie($id){
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.*, a.*, p.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE m.id_movie = :id_movie
         ORDER BY s.datetime_show";
 
@@ -255,10 +270,12 @@ class ShowDaos extends BaseDaos{
     }
 
     public function getByIdMovieFuture($id){
-        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.* FROM shows s
+        $query = "SELECT s.id_show, s.datetime_show, m.*, r.*, c.*, a.*, p.* FROM shows s
         INNER JOIN movies m ON s.idMovie_show = m.id_movie
         INNER JOIN rooms r ON s.idRoom_show = r.id_room
         INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE m.id_movie = :id_movie
         AND s.datetime_show > now();
         ORDER BY s.datetime_show";
