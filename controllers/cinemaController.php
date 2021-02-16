@@ -5,6 +5,8 @@ use models\Cinema as Cinema;
 use models\Address as Address;
 use models\Province as Province;
 
+use controllers\provinceController as ProvinceController;
+
 class CinemaController{
     private $cinemaDaos;
     private $provinceController;
