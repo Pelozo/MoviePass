@@ -60,8 +60,13 @@
 
 
     <h2>Mis entradas</h2>
+<<<<<<< HEAD
 	<div id="toolbar" onclick="printDiv('showTable')"> 
     <button type='button' class='btn '><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Imprimir</button> 
+=======
+    <div id="toolbar" onclick="printDiv('showTable')"> 
+        <button type='button' class='btn '><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Imprimir</button> 
+>>>>>>> 22307a7c55a8a46ec0ff3cad7f1a4a241b9270c4
     </div>
         <table id="showTable" class="table table-bordered">
             <col style="width:10%">
