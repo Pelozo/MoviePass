@@ -56,6 +56,7 @@ class ShowController{
             $years = array_column($this->movieDaos->getMoviesYear(),'year');
             $cinemas = $this->cinemaDaos->getAllWithRooms();
         }catch(\Exception $err){
+            throw $err;
             $err = DATABASE_ERR;
             require_once(VIEWS_PATH . "addShow.php");
             return;

@@ -1,4 +1,16 @@
 <?php include(VIEWS_PATH."header.php"); ?>
+<script>
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+    }
+</script>
 <main class="">
 
 <div style="margin-top:50px" class="container">
@@ -48,6 +60,9 @@
 
 
     <h2>Mis entradas</h2>
+	<div id="toolbar" onclick="printDiv('showTable')"> 
+    <button type='button' class='btn '><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Imprimir</button> 
+    </div>
         <table id="showTable" class="table table-bordered">
             <col style="width:10%">
             <col style="width:20%">

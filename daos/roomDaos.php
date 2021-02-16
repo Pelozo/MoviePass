@@ -3,6 +3,8 @@ namespace daos;
 use daos\BaseDaos as BaseDaos;
 use models\Cinema as Cinema;
 use models\Room as Room;
+use models\Address as Address;
+use models\Province as Province;
 
 class RoomDaos extends BaseDaos{
 
@@ -18,8 +20,10 @@ class RoomDaos extends BaseDaos{
 
     public function getById($id){
 
-        $query = "SELECT r.*, c.* FROM rooms r
-        INNER JOIN cinemas c on r.idCinema_room = c.id_cinema
+        $query ="SELECT r.*, c.*, a.*, p.* FROM rooms r
+        LEFT JOIN cinemas c on r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE id_room = :id_room;";
        
         $parameters['id_room'] = $id; 
@@ -29,19 +33,23 @@ class RoomDaos extends BaseDaos{
             $resultSet = $connection->executeWithAssoc($query, $parameters)[0];
 
             $object = new Room(                                
-                            $resultSet['name_room'],
-                            $resultSet['price_room'], 
-                            $resultSet['capacity_room'],
-                            new Cinema(
-                                $resultSet['name_cinema'],
-                                $resultSet['address_cinema'],
-                                $resultSet['city_cinema'],
-                                $resultSet['province_cinema'],
-                                $resultSet['zip_cinema']
-                            )
-                        );
+                $resultSet['name_room'],
+                $resultSet['price_room'], 
+                $resultSet['capacity_room'],
+                new Cinema(
+                    $resultSet['name_cinema'],
+                    new Address(
+                    $resultSet['block_address'],
+                    $resultSet['city_address'],
+                    $resultSet['zip_address'],
+                        new Province($resultSet['id_province'],
+                        $resultSet['name_province']))
+                )
+            );
             $object->getCinema()->setId($resultSet['id_cinema']);
             $object->setId($resultSet['id_room']); 
+            $object->getCinema()->getAddress()->setId($resultSet['id_address']);
+            $object->getCinema()->getAddress()->getProvince()->setId($resultSet['id_province']);
 
             return $object;
         }
@@ -52,8 +60,10 @@ class RoomDaos extends BaseDaos{
 
     public function getByCinema($idCinema){
         
-        $query = "SELECT r.*, c.* FROM rooms r
-        INNER JOIN cinemas c on r.idCinema_room = c.id_cinema
+        $query = "SELECT r.*, c.*, a.*, p.* FROM rooms r
+        LEFT JOIN cinemas c ON r.idCinema_room = c.id_cinema
+        LEFT JOIN addresses a ON a.id_address = c.address_cinema
+        LEFT JOIN provinces p ON p.id_province = a.province_address
         WHERE idCinema_room = :idCinema_room;";
        
         $parameters['idCinema_room'] = $idCinema; 
@@ -62,7 +72,7 @@ class RoomDaos extends BaseDaos{
             $connection = Connection::getInstance();
             $resultSet = $connection->executeWithAssoc($query, $parameters);
 
-            $results = array();
+            $result = array();
             foreach ($resultSet as $room){
                 $object = new Room(                                
                                 $room['name_room'],
@@ -70,14 +80,18 @@ class RoomDaos extends BaseDaos{
                                 $room['capacity_room'],
                                 new Cinema(
                                     $room['name_cinema'],
-                                    $room['address_cinema'],
-                                    $room['city_cinema'],
-                                    $room['province_cinema'],
-                                    $room['zip_cinema']
+                                    new Address(
+                                    $room['block_address'],
+                                    $room['city_address'],
+                                    $room['zip_address'],
+                                        new Province($room['id_province'],
+                                        $room['name_province']))
                                 )
                             );
                 $object->getCinema()->setId($room['id_cinema']);
                 $object->setId($room['id_room']); 
+                $object->getCinema()->getAddress()->setId($room['id_address']);
+                $object->getCinema()->getAddress()->getProvince()->setId($room['id_province']);
 
                 $result[] = $object;
             }

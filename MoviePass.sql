@@ -140,3 +140,48 @@ insert into tickets (idPurchase_ticket, ticketNumber_ticket, qr_ticket) values (
 
 ALTER TABLE users
 MODIFY password_user varchar(50);
+
+
+
+CREATE TABLE provinces(
+	id_province INT AUTO_INCREMENT,
+	name_province VARCHAR(50),
+	CONSTRAINT pk_countries PRIMARY KEY(id_province),
+	CONSTRAINT unq_name_provinces UNIQUE (name_province)
+);
+
+INSERT INTO provinces(name_province) VALUES
+('Buenos Aires'),
+('Catamarca'),
+('Chaco'),
+('Chubut'),
+('Córdoba'),
+('Corrientes'),
+('Entre Rios'),
+('Formosa'),
+('Jujuy'),
+('La Pampa'),
+('La Rioja'),
+('Mendoza'),
+('Misiones'),
+('Neuquén'),
+('Rio Negro'),
+('Salta'),
+('San Juan'),
+('San Luis'),
+('Santa Cruz'),
+('Santa Fe'),
+('Santiago del Estero'),
+('Tierra del Fuego'),
+('Tucumán')
+
+
+ALTER TABLE cinemas
+MODIFY COLUMN province_cinema INT;
+
+UPDATE cinemas
+SET province_cinema = 1
+
+ALTER TABLE cinemas
+ADD CONSTRAINT fk_province_cinema FOREIGN KEY(province_cinema) REFERENCES provinces(id_province);
+
