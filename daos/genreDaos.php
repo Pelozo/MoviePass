@@ -1,6 +1,6 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
+use daos\BaseDaos as BaseDaos;
 use models\genre as Genre;
 
 class GenreDaos  extends BaseDaos{
@@ -8,7 +8,7 @@ class GenreDaos  extends BaseDaos{
     const TABLE_NAME = 'genres';
     private static $instance = null;
 
-    private function __construct(){
+    protected function __construct(){
         parent::__construct(self::TABLE_NAME, 'Genre');        
     }
 

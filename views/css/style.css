@@ -169,3 +169,11 @@ body {
      display: none;
  }
 
+ .single {
+    float:none;
+    margin:0 auto;
+}
+.row.text-center > div {
+        display: inline-block;
+        float: none;
+    }

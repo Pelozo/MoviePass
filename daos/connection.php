@@ -3,7 +3,7 @@
 
     use \PDO as PDO;
     use \Exception as Exception;
-    use daos\queryType as QueryType;
+    use daos\QueryType as QueryType;
 
     class Connection{
         //variable para guardar la instancia de pdo
@@ -17,7 +17,7 @@
         private function __construct(){
             try{
                 //instancia un nuevo PDO con los datos de la db (tipo de db, nombre, usuario, pass, etc)
-                $this->pdo = new PDO("mysql:host=".DB_HOST."; dbname=".DB_NAME, DB_USER, DB_PASS);
+                $this->pdo = new PDO("mysql:host=".DB_HOST."; dbname=".DB_NAME, DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
                 //setea para que el pdo nos tire los errores de la db si los hay.
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }

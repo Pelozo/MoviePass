@@ -1,7 +1,7 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\purchase as Purchase;
+use daos\BaseDaos as BaseDaos;
+use models\Purchase as Purchase;
 
 class PurchaseDaos extends BaseDaos{
     

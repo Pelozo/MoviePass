@@ -1,5 +1,4 @@
 <?php
- 
 	//muestra todos los errores que puedan surgir en php
 	ini_set('display_errors', 1);
 	ini_set('display_startup_errors', 1);
@@ -21,6 +20,7 @@
 	
 	//inicia el autoload
 	Autoload::start();
+
 
 	//inicia session
 	session_start();

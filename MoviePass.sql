@@ -26,7 +26,6 @@ create table rols (id_rol int auto_increment,
 create table users (id_user int auto_increment,
 					email_user varchar (50) NOT NULL,
                     password_user varchar (50) NOT NULL,
-
                     idRol_user int NOT NULL,
                     constraint pk_idUser primary key (id_user),
                     constraint fk_idRol foreign key (idRol_user) references rols (id_rol),
@@ -113,3 +112,76 @@ INSERT INTO rooms (name_room, price_room ,capacity_room, idCInema_room) VALUES (
 INSERT INTO rooms (name_room, price_room ,capacity_room, idCInema_room) VALUES ('Sala C', 430, 128, 3);
 
 INSERT INTO `shows` VALUES (29,337401,'2020-10-27 14:11:00',1),(30,337401,'2020-10-27 14:20:00',1),(31,337401,'2020-10-28 14:25:00',4),(32,4291,'2020-10-22 10:49:00',2),(33,78450,'2020-10-31 14:56:00',3),(34,213,'2020-10-29 14:20:00',5),(35,468,'2020-10-30 14:20:00',5),(36,4291,'2020-10-31 14:20:00',6),(37,86835,'2020-11-01 14:20:00',3),(38,340102,'2020-11-02 14:20:00',1),(39,11194,'2020-11-04 14:20:00',2),(40,11423,'2020-11-05 14:20:00',3),(41,446893,'2020-11-03 14:20:00',4),(42,446893,'2020-11-03 14:20:00',4),(43,669770,'2020-11-03 14:20:00',3),(44,669665,'2020-11-03 14:20:00',2),(45,678999,'2020-11-03 14:20:00',1),(46,684308,'2020-11-03 14:20:00',4),(47,539529,'2020-11-03 14:20:00',2),(48,541305,'2020-11-03 14:20:00',8),(49,550652,'2020-11-03 14:20:00',7);
+
+SELECT s.id_show, s.datetime_show, m.*, r.*, c.name_cinema FROM shows s
+INNER JOIN movies m ON s.idMovie_show = m.id_movie
+INNER JOIN rooms r ON s.idRoom_show = r.id_room
+INNER JOIN cinemas c ON r.idCinema_room = c.id_cinema
+WHERE m.id_movie = 213
+ORDER BY s.datetime_show;
+
+SELECT SUM(p.ticketsQuantity_purchase) AS sold
+FROM purchases p
+WHERE p.idShow_purchase = 71;
+
+SELECT * from purchases;
+drop table tickets;
+drop table purchases;
+
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),20,0,12000);
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),15,0,9000);
+insert into purchases (idUser_purchase, IdShow_purchase, date_purchase, ticketsQuantity_purchase, discount_purchase, total_purchase) values (1,71,now(),80,0,48000);
+
+insert into tickets (idPurchase_ticket, ticketNumber_ticket, qr_ticket) values (1,20,'qr');
+
+
+
+
+
+ALTER TABLE users
+MODIFY password_user varchar(50);
+
+
+
+CREATE TABLE provinces(
+	id_province INT AUTO_INCREMENT,
+	name_province VARCHAR(50),
+	CONSTRAINT pk_countries PRIMARY KEY(id_province),
+	CONSTRAINT unq_name_provinces UNIQUE (name_province)
+);
+
+INSERT INTO provinces(name_province) VALUES
+('Buenos Aires'),
+('Catamarca'),
+('Chaco'),
+('Chubut'),
+('Córdoba'),
+('Corrientes'),
+('Entre Rios'),
+('Formosa'),
+('Jujuy'),
+('La Pampa'),
+('La Rioja'),
+('Mendoza'),
+('Misiones'),
+('Neuquén'),
+('Rio Negro'),
+('Salta'),
+('San Juan'),
+('San Luis'),
+('Santa Cruz'),
+('Santa Fe'),
+('Santiago del Estero'),
+('Tierra del Fuego'),
+('Tucumán')
+
+
+ALTER TABLE cinemas
+MODIFY COLUMN province_cinema INT;
+
+UPDATE cinemas
+SET province_cinema = 1
+
+ALTER TABLE cinemas
+ADD CONSTRAINT fk_province_cinema FOREIGN KEY(province_cinema) REFERENCES provinces(id_province);
+

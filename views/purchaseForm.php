@@ -44,6 +44,12 @@
             <div class="container">
             <div class="row">
                 <div class="col-sm-12 bg-light boxStyle">
+                    <?php if(isset($discountMessage)){?>
+                        <div class="alert alert-info" role="alert">
+                            <?=$discountMessage;?>
+                        </div>
+                    <?php } ?>
+
                     <form name="theform" action="<?=FRONT_ROOT?>purchase/makePurchase" method="POST">
                     <?php if(!isset($purchase)){ ?>
 
@@ -60,26 +66,20 @@
                             </select>
             
                         </div>
-
-                        <div class="row">
-                            <div class="form-group col-sm-8">
+                            <div class="row">
+                                <div class="form-group col-sm-8">
+                                    <div class="form-group">
+                                        <label>Nro. de Tarjeta</label>
+                                        <input class="form-control" name="cardNumber" type="text" size="20" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
                                 <div class="form-group">
-                                    <label>Nro. de Tarjeta</label>
-                                    <input class="form-control" name="cardNumber" type="text" size="20" required>
+                                    <label>CVV/CVC</label>
+                                    <input class="form-control" name="cardCode" type="number" maxlength="3" required>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
-                            <div class="form-group">
-                                <label>CVV/CVC</label>
-                                <input class="form-control" name="cardCode" type="number" maxlength="3" required>
-                            </div>
                         </div>
-
-
-                        </div>
-
-
-
 
 
                         <div class="form-group">
@@ -99,7 +99,7 @@
                             <input class="form-control" name="discount" type="text" size="20" required>                        
                         </div>
                         <div class="form-group">
-                            <label>Total</label>
+                            <label id="lblTotal">Total</label>
                             <input class="form-control" name="total" id="total" type="text" size="20" disabled>                        
                         </div>
                         <div class="form-group">
@@ -125,13 +125,24 @@
 </div>
             
 <script>
+
+var discount = <?=$discount?>;
+
 $(document).ready(function(){
     updateTotal();
 });
 
 function updateTotal(){
     var tickets = document.getElementById("tickets").value;
-  $("#total").val("$" + tickets * <?=$show->getRoom()->getPrice();?>);
+    
+    if(tickets > 1 && discount > 0){        
+        $("#total").val("$" + tickets * <?=$show->getRoom()->getPrice();?> * (1 - (discount/100)));
+        $("#lblTotal").text("Total: (¡Con descuento del " + discount + "%!)");
+    }else{
+        $("#total").val("$" + tickets * <?=$show->getRoom()->getPrice();?>);
+        $("#lblTotal").text("Total:");
+    }
+  
 }
 
 </script>

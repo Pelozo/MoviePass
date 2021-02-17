@@ -1,9 +1,10 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
-use models\ticket as Ticket;
+use daos\BaseDaos as BaseDaos;
+use models\Ticket as Ticket;
 use models\Purchase as Purchase;
-use models\user as User;
+use models\User as User;
+
 class TicketDaos extends BaseDaos{
     
     const TABLE_NAME = 'tickets';
@@ -73,7 +74,8 @@ class TicketDaos extends BaseDaos{
                                     $ticket['discount_purchase'],
                                     $ticket['date_purchase']
                                 ),
-                                $ticket['ticketNumber_ticket']
+                                $ticket['ticketNumber_ticket'],
+                                $ticket['qr_ticket']
                             );
                 $object->getPurchase()->setId($ticket['id_purchase']);
                 //$object->getPurchase()->getUser()->setId($ticket['id_user']);

@@ -1,4 +1,4 @@
-<nav class="navBar">
+<nav class="navBar" style="margin-bottom:50px">
      <div>
           <a href='<?=FRONT_ROOT?>'><img src='<?=FRONT_ROOT?>views/logo/example.png' alt='logo' width=100px></a>
           <?php 

@@ -1,6 +1,6 @@
 <?php
 namespace daos;
-use daos\baseDaos as BaseDaos;
+use daos\BaseDaos as BaseDaos;
 
 
 class UserDaos extends BaseDaos{

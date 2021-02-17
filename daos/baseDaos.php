@@ -15,7 +15,8 @@ abstract class BaseDaos{
     protected function __construct($table, $class){ 
         $this->table = $table;
         $this->className = strtolower($class);
-        $this->class = '\\models\\'.strtolower($class);
+        $this->class = '\\models\\'.ucfirst($class);
+		
         $this->reflectionClass = new ReflectionClass($this->class);
     }
 
@@ -54,10 +55,22 @@ abstract class BaseDaos{
             $query = "INSERT INTO " . $this->table . " ("; //id, name, lastname) values (:id, :name, :lastname)
 
             //get class properties
-            $properties = $this->reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE | ReflectionProperty::IS_PROTECTED);              
+            $properties = $this->reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE | ReflectionProperty::IS_PROTECTED); 
             
             //get column names from property names
-            $columns = array_column($properties, 'name');
+			
+			if(phpversion()>=7){			
+				$columns = array_column($properties, 'name');
+			}else{
+				//$column_name = "name";
+				//$columns =  array_map(function($element) use($column_name){return $element[$column_name];}, $properties);
+				
+				$columns = array();
+				$columnKey = 'name';
+				foreach ($properties as $value) {
+					$columns[] = $value->name;				
+				}
+			}
 
             //retrieve values from object instance 
             $parameters = array();
@@ -73,8 +86,15 @@ abstract class BaseDaos{
             //add "_{objectClass}" to all properties (this is done cuz in db column names end with "_entityName") ex: id_cinema, name_cinema, name_user, email_user
             array_walk($properties, function(&$value, $key) { $value->name .= '_' . $this->className; } );
 
-            //get column names from property names
-            $columns = array_column($properties, 'name');
+			if(phpversion()>=7){			
+				$columns = array_column($properties, 'name');
+			}else{				
+				$columns = array();
+				$columnKey = 'name';
+				foreach ($properties as $value) {
+					$columns[] = $value->name;				
+				}			
+			}
 
             //remove id if necessary
             if(!$withId){
@@ -131,7 +151,7 @@ abstract class BaseDaos{
             $resultSet = $this->connection->executeWithAssoc($query, $parameters);
             if (!empty($resultSet)){
                 foreach($resultSet as $row){
-                    $object = new $this->class();                
+                    $object = new $this->class();
                     foreach($row as $column=>$value){
                         $property = explode('_', $column)[0];
                         $method = new ReflectionMethod($this->class, 'set' . ucfirst($property));

@@ -6,10 +6,16 @@ class Ticket implements \JsonSerializable{
     private $ticket_number;
     private $qr;
 
-    public function __construct($purchase = '', $ticket_number = ''){
+    public function __construct($purchase = '', $ticket_number = '', $qr = null){
         $this->purchase = $purchase;
         $this->ticket_number = $ticket_number;
-        $this->qr = $this->generateQr();
+
+        $this->qr = $qr;  
+
+        if($qr == null){
+            $this->qr = $this->generateQr();
+        }
+        
     }
 
     public function getPurchase(){

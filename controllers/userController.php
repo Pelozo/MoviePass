@@ -1,22 +1,36 @@
 <?php
 namespace controllers;
-
 use models\user as User;
 use models\userProfile as Profile;
-use daos\userDaos as UserDaos;
-use daos\userProfileDaos as UserProfileDaos;
+use daos\UserDaos as UserDaos;
+use daos\UserProfileDaos as UserProfileDaos;
 use daos\TicketDaos as TicketDaos;
+
+use controllers\movieController as MovieController;
+use controllers\ticketController as TicketController;
+
+use util\mailer as Mailer;
+
+//fb stuff
+use Facebook\Facebook;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
+//Autoload facebook
+require_once 'Facebook/autoload.php';
 
 class UserController{
     private $daos;
     private $userProfileDaos;
     private $movieController;
 
+    const FB_ERR = "Ocurrió un error al conectar con facebook";
+
     public function __construct(){
         $this->daos = new UserDaos();
         $this->userProfileDaos = new UserProfileDaos();
         $this->movieController = new MovieController();
         $this->ticketDaos = new TicketDaos();
+
     }
 
     public function signup($email = null, $password = null, $firstName = null, $lastName = null, $dni = null){
@@ -34,10 +48,10 @@ class UserController{
                     $profile = new Profile($firstName, $lastName, $dni);
                     $profile->setIdUser($_user->getId());
                     $this->userProfileDaos->add($profile);
-                    //$this->login();
                     require_once(VIEWS_PATH . "login.php");
                 } 
             } catch(\Exception $err){
+				throw $err;
                 $err = DATABASE_ERR;
                 require_once(VIEWS_PATH . "signup.php");
             }
@@ -46,7 +60,7 @@ class UserController{
         }
     }
 
-    public function login($email = null, $password = null, $redirect = null){
+    public function login($email = null, $password = null){
 
         if(isset($email, $password)){
             try{
@@ -57,7 +71,10 @@ class UserController{
                         $_SESSION['user'] = $user;
                         $profile = $this->userProfileDaos->getById($user->getId());
                         $_SESSION['profile'] = $profile;
-                        if(isset($redirect)){
+                        if(isset($_COOKIE['redirect'])){
+                            $redirect = $_COOKIE['redirect'];
+                            //remove cookie
+                            setcookie("redirect", "$redirect", 1, "/");
                             header("Location: " . FRONT_ROOT . "$redirect"); //justificado
                         }else{
                             $this->movieController->index();
@@ -76,6 +93,162 @@ class UserController{
         require_once(VIEWS_PATH . "login.php");
     }
 
+    public function checkFbPermission(){
+
+        $fb = new Facebook(array(
+            'app_id' => FB_APP_ID,
+            'app_secret' => FB_APP_SECRET,
+            'default_graph_version' => 'v2.9',
+        ));
+
+        try {
+            
+            $helper = $fb->getRedirectLoginHelper();
+            $accessToken = $helper->getAccessToken();
+            $fb->setDefaultAccessToken($accessToken);
+            $response = $fb->get('me?fields=email');
+          } catch(FacebookResponseException $e) {
+            echo 'Graph returned an error: ' . $e->getMessage();
+            exit;
+          } catch(FacebookSDKException $e) {
+            echo 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+          }
+          $response = $response->getGraphNode()->asArray();
+          if(!isset($response['email'])){
+                $err = "Se necesita el email para poder registrase";
+                require_once(VIEWS_PATH . "signup.php");
+                exit;
+          }
+
+        if(isset($accessToken)){            
+            if(isset($_SESSION['facebook_access_token'])){
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);
+            }else{
+                // Token de acceso de corta duración en sesión
+                $_SESSION['facebook_access_token'] = (string) $accessToken;
+           
+                  // Controlador de cliente OAuth 2.0 ayuda a administrar tokens de acceso
+                $oAuth2Client = $fb->getOAuth2Client();
+           
+                // Intercambia una ficha de acceso de corta duración para una persona de larga vida
+                $longLivedAccessToken = $oAuth2Client->getLongLivedAccessToken($_SESSION['facebook_access_token']);
+                $_SESSION['facebook_access_token'] = (string) $longLivedAccessToken;
+           
+                // Establecer token de acceso predeterminado para ser utilizado en el script
+                $fb->setDefaultAccessToken($_SESSION['facebook_access_token']);
+            }
+
+            // Obtener información sobre el perfil de usuario facebook
+            try {
+                $profileRequest = $fb->get('/me?fields=name,first_name,last_name,email,picture');
+                $fbUserProfile = $profileRequest->getGraphNode()->asArray();
+            } catch(FacebookResponseException $e) {
+                $err =  SELF::FB_ERR . $e->getMessage();
+                require_once(VIEWS_PATH . "signup.php");
+                return;
+            } catch(FacebookSDKException $e) {
+                $err =  SELF::FB_ERR . $e->getMessage();
+                require_once(VIEWS_PATH . "signup.php");
+                return;
+            }
+
+           
+            try{
+                 //register in db
+                if(!$this->daos->exists($fbUserProfile['email'])){
+                    $user = new User($fbUserProfile['email'],null,2);
+                    $this->daos->add($user); 
+                    $_user = $this->daos->getByEmail($user->getEmail());
+                    $profile = new Profile($fbUserProfile['first_name'], $fbUserProfile['last_name'], null);
+                    $profile->setIdUser($_user->getId());
+                    $this->userProfileDaos->add($profile);
+                    
+                    $_SESSION['user'] = $_user;
+                    $_SESSION['profile'] = $profile;
+                }else{//just login
+                    $user = $this->daos->getByEmail($fbUserProfile['email']);
+                    $userProfile = $this->userProfileDaos->getById($user->getId());
+                    $_SESSION['user'] = $user;
+                    $_SESSION['profile'] = $userProfile;
+                }
+            } catch(\Exception $err){
+                $err = DATABASE_ERR;
+                require_once(VIEWS_PATH . "signup.php");
+                return;;
+            }
+
+        }
+
+        if(isset($_COOKIE['redirect'])){
+            $redirect = $_COOKIE['redirect'];
+            //remove cookie
+            setcookie("redirect", "$redirect", 1, "/");
+            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+        }else{
+            $this->movieController->index();
+        }
+    }
+
+
+
+    public function signupFacebook(){
+        
+        $fb = new Facebook(array(
+            'app_id' => FB_APP_ID,
+            'app_secret' => FB_APP_SECRET,
+            'default_graph_version' => 'v2.9',
+        ));
+
+        //permission needed
+        $fbPermissions = array('email');
+
+        $helper = $fb->getRedirectLoginHelper(); 
+
+        //get token
+        try {
+            if(isset($_SESSION['facebook_access_token'])){
+                $accessToken = $_SESSION['facebook_access_token'];
+            }else{
+                $accessToken = $helper->getAccessToken();
+            }
+        } catch(FacebookResponseException $e) {
+            $err= 'Graph returned an error: ' . $e->getMessage();
+            exit;
+        } catch(FacebookSDKException $e) {
+            $err = 'Facebook SDK returned an error: ' . $e->getMessage();
+            exit;
+        } catch(\Exception $e){
+            $err = SELF::FB_ERR;
+            exit;           
+        }
+
+ 
+
+        //ask for user permission
+        $loginURL = $helper->getLoginUrl(FB_REDIRECTION, $fbPermissions);
+        header('Location: '.$loginURL);        
+        
+    }
+
+    public function loginFacebook(){
+
+        $this->signupFacebook();
+
+        echo "asd";
+        return;
+
+
+        if(isset($_COOKIE['redirect'])){
+            $redirect = $_COOKIE['redirect'];
+            //remove cookie
+            setcookie("redirect", "$redirect", 1, "/");
+            header("Location: " . FRONT_ROOT . "$redirect"); //justificado
+        }else{
+            $this->movieController->index();
+        }
+    }
+
     public function logout(){
         $_SESSION['user'] = null;
         $_SESSION['profile'] = null;
@@ -91,8 +264,7 @@ class UserController{
         }
 
         try{
-            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());            
-
+            $profile = $this->userProfileDaos->getById($_SESSION['user']->getId());
         }catch(\Exception $err){
             $err = DATABASE_ERR;
         }
